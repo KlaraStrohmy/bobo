@@ -2580,3 +2580,36 @@ input.narrow {
     white-space: nowrap;
   }
 }
+
+/* ---- Účet / odhlášení ---- */
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.account-text {
+  min-width: 0;
+}
+.account-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+.account-email {
+  font-size: 0.875rem;
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.btn-block {
+  width: 100%;
+  justify-content: center;
+}
+.btn-signout {
+  color: var(--no-text);
+  border-color: var(--no-soft);
+}
+.btn-signout:hover:not(:disabled) {
+  background: var(--no-soft);
+}

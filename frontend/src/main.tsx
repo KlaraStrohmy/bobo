@@ -8,7 +8,7 @@ import {
 } from '@azure/msal-browser';
 import { MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { registerSW } from 'virtual:pwa-register';
-import { enableDevMode, fetchConfig, setTokenProvider } from './api';
+import { enableDevMode, fetchConfig, setLogoutHandler, setTokenProvider } from './api';
 import { ConfigContext } from './config';
 import App from './App';
 import './fonts.css';
@@ -90,6 +90,11 @@ async function bootstrap(): Promise<void> {
       }
       throw err;
     }
+  });
+
+  setLogoutHandler(async () => {
+    const account = pca.getActiveAccount() ?? pca.getAllAccounts()[0];
+    await pca.logoutRedirect({ account, postLogoutRedirectUri: window.location.origin });
   });
 
   root.render(

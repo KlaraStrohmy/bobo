@@ -21,6 +21,21 @@ export function setTokenProvider(fn: TokenProvider): void {
   tokenProvider = fn;
 }
 
+let logoutHandler: (() => Promise<void>) | null = null;
+
+export function setLogoutHandler(fn: () => Promise<void>): void {
+  logoutHandler = fn;
+}
+
+/** Whether signing out is possible (false in dev mode without MSAL). */
+export function canLogout(): boolean {
+  return logoutHandler !== null;
+}
+
+export async function logout(): Promise<void> {
+  await logoutHandler?.();
+}
+
 export function enableDevMode(): void {
   devMode = true;
 }

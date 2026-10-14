@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, DEFAULT_DEV_USER, DEV_USER_KEY, errorMessage, getDevUser, isDevMode } from '../api';
+import { api, canLogout, DEFAULT_DEV_USER, DEV_USER_KEY, errorMessage, getDevUser, isDevMode, logout } from '../api';
 import { useConfig } from '../config';
 import { Avatar, Callout, Toggle } from '../components';
 import { Icon, type IconName } from '../icons';
@@ -207,6 +207,8 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
 
       {iosNeedsInstall && <IosInstallCard />}
 
+      {canLogout() && <AccountCard me={me} />}
+
       {isDevMode() && (
         <>
           <h2 className="group-label">Vývoj</h2>
@@ -218,6 +220,42 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
 
       <p className="footnote">bobo · přihlašování na obědy</p>
     </div>
+  );
+}
+
+function AccountCard({ me }: { me: Me }) {
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+
+  async function signOut() {
+    setBusy(true);
+    try {
+      // Stop reminders on this device so they don't keep arriving for the signed-out user.
+      await unsubscribe().catch(() => undefined);
+      await logout();
+    } catch (err) {
+      toast(errorMessage(err), 'error');
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <h2 className="group-label">Účet</h2>
+      <section className="card group">
+        <div className="account-row">
+          <Avatar name={me.name || me.email} seed={me.id} size="md" />
+          <div className="account-text">
+            <div className="account-name">{me.name || me.email}</div>
+            <div className="account-email">{me.email}</div>
+          </div>
+        </div>
+        <button className="btn btn-block btn-signout" disabled={busy} onClick={signOut}>
+          <Icon name="logout" size={17} />
+          {busy ? 'Odhlašuji…' : 'Odhlásit se'}
+        </button>
+      </section>
+    </>
   );
 }
 
