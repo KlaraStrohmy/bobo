@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bobo",
+  "workers_dev": true,
+  "preview_urls": false,
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bobo",
+      // Fill in after `npx wrangler d1 create bobo`.
+      "database_id": "efe16961-8818-48ff-b86b-6b257c0affb2",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": { "crons": ["* * * * *"] },
+  "vars": {
+    // AZURE_TENANT_ID and AZURE_CLIENT_ID are set as secrets (wrangler secret put), not kept in git.
+    "ADMIN_EMAILS": "klara.matoulkova@strohmy.cz,pavel.vojacek@strohmy.cz",
+    "VAPID_SUBJECT": "mailto:pavel.vojacek@strohmy.cz",
+    // Public half of the VAPID pair (scripts/gen-vapid.mjs); set before deploying.
+    "VAPID_PUBLIC_KEY": "BCpj9t1_trnfcQiO3Rtb3B9KqzvPXc3l_ILMy2Hze6X3uj-bjMyc39R1FIliuazG2EJbN-G1I1c3A6FFnW1Dva4"
+  }
+  // Secrets (`wrangler secret put`): VAPID_PRIVATE_KEY, PUSH_TOKEN_SECRET.
+  // Local dev: copy .dev.vars.example to .dev.vars.
+}

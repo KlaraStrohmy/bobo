@@ -1,0 +1,10 @@
+# Local development only: cp .dev.vars.example .dev.vars (never commit .dev.vars).
+# Fill the keys with `node scripts/gen-vapid.mjs --dev-vars` (dev only, never reuse in production).
+#
+# Auth off: the API takes the user from the X-Dev-User header (email).
+AUTH_DISABLED=true
+# Empty client id switches the SPA into dev mode (no MSAL, sends X-Dev-User).
+AZURE_CLIENT_ID=
+VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
+PUSH_TOKEN_SECRET=

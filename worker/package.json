@@ -1,0 +1,26 @@
+{
+  "name": "bobo-worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build:frontend": "npm --prefix ../frontend run build",
+    "dev": "npm run build:frontend && wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply bobo --local",
+    "deploy": "npm --prefix ../frontend ci && npm run build:frontend && wrangler d1 migrations apply bobo --remote && wrangler deploy",
+    "gen:vapid": "node scripts/gen-vapid.mjs"
+  },
+  "dependencies": {
+    "hono": "^4.13.13",
+    "jose": "^6.2.12"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.2",
+    "@cloudflare/workers-types": "^5.20261014.1",
+    "typescript": "~5.9.3",
+    "vitest": "~4.1",
+    "wrangler": "^4.151.0"
+  }
+}

@@ -1,0 +1,10 @@
+# Cloudflare Workers Static Assets headers (copied into worker/public by the build).
+# The service worker, manifest and app shell must be revalidated so updates roll out.
+/sw.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache

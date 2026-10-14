@@ -1,0 +1,9 @@
+node_modules/
+frontend/dist/
+*.db
+*.sqlite3
+.env
+.env.*
+worker/public/
+.wrangler/
+.dev.vars
