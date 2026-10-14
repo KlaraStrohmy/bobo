@@ -13,6 +13,10 @@ export interface Me {
   reminderEnabled: boolean;
   reminderTime: string;
   pushSubscribed: boolean;
+  /** The reminder time must be strictly before this HH:MM (null = any time works). */
+  reminderDeadline: string | null;
+  /** False when the admin's cutoff makes day-before reminders impossible. */
+  remindersPossible: boolean;
 }
 
 export interface Day {

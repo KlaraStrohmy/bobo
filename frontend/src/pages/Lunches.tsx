@@ -15,6 +15,7 @@ import {
 } from '../dates';
 import { ErrorState, firstName, Segmented, Skeleton, type Answer } from '../components';
 import { Icon } from '../icons';
+import { InstallBanner } from '../installGuide';
 import { useToast } from '../toast';
 import type { Day, Me } from '../types';
 
@@ -148,6 +149,7 @@ export default function LunchesPage({ me }: { me: Me }) {
 
   return (
     <div className="page">
+      <InstallBanner />
       <Hero
         greet={`${greeting()}${name ? `, ${name}` : ''}`}
         next={next}

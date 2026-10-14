@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS } from '../src/calendar';
 import type { Env } from '../src/env';
 import worker from '../src/index';
-import { reminderPayload, reminderTarget, runReminders, selectReminderUsers, type ReminderCandidate } from '../src/reminders';
+import { reminderDeadline, reminderPayload, reminderTarget, reminderTimeAllowed, runReminders, selectReminderUsers, type ReminderCandidate } from '../src/reminders';
 import { as, Clock, client, resetDb, type TestClient } from './helpers';
 import { decrypt, newSubscriptionKeys, newVapidKeys } from './pushCrypto';
 
@@ -57,10 +57,20 @@ describe('reminder selection', () => {
     expect(reminderTarget(new Date('2026-10-26T15:00:00Z'), CS, null)).toBeNull();
   });
 
+  it('allows only reminder times before the cutoff', () => {
+    expect(reminderTimeAllowed('15:59', CS)).toBe(true);
+    expect(reminderTimeAllowed('16:00', CS)).toBe(false);
+    expect(reminderTimeAllowed('23:00', { ...CS, cutoffDaysBefore: 0 })).toBe(true);
+    expect(reminderTimeAllowed('08:00', { ...CS, cutoffDaysBefore: 2 })).toBe(false);
+    expect(reminderDeadline(CS)).toBe('16:00');
+    expect(reminderDeadline({ ...CS, cutoffDaysBefore: 0 })).toBeNull();
+  });
+
   it('builds the payload text', () => {
-    expect(reminderPayload('2026-10-15', 'tok')).toEqual({
-      title: 'Oběd zítra?',
-      body: 'Čtvrtek 15. 10. — budeš obědvat?',
+    expect(reminderPayload('2026-10-14', 'tok', '16:00').title).toBe('Oběd ve středu 14. 10.?');
+    expect(reminderPayload('2026-10-15', 'tok', '16:00')).toEqual({
+      title: 'Oběd ve čtvrtek 15. 10.?',
+      body: 'Zítra se vaří — budeš obědvat? Odpověz do 16:00.',
       date: '2026-10-15',
       token: 'tok',
       url: '/?date=2026-10-15',
@@ -138,7 +148,8 @@ describe('reminder job', () => {
     const keys = subKeys.get(sent[0].url)!;
     const body = new Uint8Array(await sent[0].arrayBuffer());
     const payload = JSON.parse(await decrypt(body, keys.privateKey, keys.p256dh, keys.auth));
-    expect(payload).toEqual({ ...reminderPayload('2026-10-13', payload.token), body: 'Úterý 13. 10. — budeš obědvat?' });
+    expect(payload).toEqual(reminderPayload('2026-10-13', payload.token, '16:00'));
+    expect(payload.title).toBe('Oběd v úterý 13. 10.?');
     const res = await c.post('/api/push/answer', { token: payload.token, attending: false });
     expect(await res.json()).toEqual({ ok: true, date: '2026-10-13' });
   });

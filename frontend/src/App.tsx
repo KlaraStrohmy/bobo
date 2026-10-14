@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, errorMessage, getDevUser, isDevMode } from './api';
 import { ToastProvider } from './toast';
-import { Avatar, ErrorState } from './components';
+import { ErrorState } from './components';
+import { AccountMenu } from './accountMenu';
+import { InstallWatcher } from './installGuide';
 import { Icon, type IconName } from './icons';
 import type { Me } from './types';
 import LunchesPage, { LunchesSkeleton } from './pages/Lunches';
@@ -53,12 +55,16 @@ export default function App() {
     window.scrollTo({ top: 0 });
   };
 
-  const tabs: Tab[] = me?.isAdmin ? ['lunches', 'settings', 'admin'] : ['lunches', 'settings'];
+  // Text tabs; Nastavení lives as an icon button at the right edge of the top bar.
+  const tabs: Tab[] = me?.isAdmin ? ['lunches', 'admin'] : ['lunches'];
   const active: Tab = tab === 'admin' && me && !me.isAdmin ? 'lunches' : tab;
+  // A single-item bottom bar is pointless: non-admins navigate from the top bar only.
+  const showTabbar = tabs.length > 1;
 
   return (
     <ToastProvider>
-      <div className="app">
+      <InstallWatcher />
+      <div className={`app ${showTabbar ? '' : 'no-tabbar'}`}>
         <a className="skip-link" href="#main">
           Přeskočit na obsah
         </a>
@@ -89,13 +95,18 @@ export default function App() {
                 </button>
               ))}
             </nav>
-            <div className="who" title={me?.email}>
+            <div className="who">
               {isDevMode() && <span className="badge badge-dev">DEV · {getDevUser().split('@')[0]}</span>}
-              {me && (
-                <button className="who-btn" onClick={() => go('settings')} aria-label={`Účet: ${me.name || me.email}`}>
-                  <Avatar name={me.name || me.email} seed={me.id} size="sm" />
-                </button>
-              )}
+              <button
+                className={`settings-btn ${active === 'settings' ? 'active' : ''}`}
+                aria-label="Nastavení"
+                title="Nastavení"
+                aria-current={active === 'settings' ? 'page' : undefined}
+                onClick={() => go('settings')}
+              >
+                <Icon name="sliders" size={20} strokeWidth={active === 'settings' ? 2.3 : 2} />
+              </button>
+              {me && <AccountMenu me={me} onSettings={() => go('settings')} />}
             </div>
           </div>
         </header>
@@ -112,23 +123,25 @@ export default function App() {
           )}
         </main>
 
-        <nav className="tabbar" aria-label="Hlavní navigace">
-          <div className="tabbar-inner" style={{ ['--tabs' as string]: tabs.length }}>
-            {tabs.map((t) => (
-              <button
-                key={t}
-                className={t === active ? 'active' : ''}
-                aria-current={t === active ? 'page' : undefined}
-                onClick={() => go(t)}
-              >
-                <span className="tab-icon">
-                  <Icon name={ICONS[t]} size={22} strokeWidth={t === active ? 2.2 : 1.9} />
-                </span>
-                <span className="tab-label">{LABELS[t]}</span>
-              </button>
-            ))}
-          </div>
-        </nav>
+        {showTabbar && (
+          <nav className="tabbar" aria-label="Hlavní navigace">
+            <div className="tabbar-inner" style={{ ['--tabs' as string]: tabs.length }}>
+              {tabs.map((t) => (
+                <button
+                  key={t}
+                  className={t === active ? 'active' : ''}
+                  aria-current={t === active ? 'page' : undefined}
+                  onClick={() => go(t)}
+                >
+                  <span className="tab-icon">
+                    <Icon name={ICONS[t]} size={22} strokeWidth={t === active ? 2.2 : 1.9} />
+                  </span>
+                  <span className="tab-label">{LABELS[t]}</span>
+                </button>
+              ))}
+            </div>
+          </nav>
+        )}
       </div>
     </ToastProvider>
   );

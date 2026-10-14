@@ -41,12 +41,19 @@ describe('API', () => {
       reminderEnabled: false,
       reminderTime: '15:00',
       pushSubscribed: false,
+      reminderDeadline: '16:00',
+      remindersPossible: true,
     });
     const me = (await (await c.put('/api/me/preferences', { reminderEnabled: true, reminderTime: '14:30' }, ALICE)).json()) as Record<string, unknown>;
     expect(me.reminderEnabled).toBe(true);
     expect(me.reminderTime).toBe('14:30');
     expect((await c.put('/api/me/preferences', { reminderEnabled: true, reminderTime: '25:99' }, ALICE)).status).toBe(422);
     expect((await c.put('/api/me/preferences', { reminderEnabled: 'yes', reminderTime: '10:00' }, ALICE)).status).toBe(422);
+    // A day-before reminder after the 16:00 cutoff could never fire.
+    const late = await c.put('/api/me/preferences', { reminderEnabled: true, reminderTime: '16:00' }, ALICE);
+    expect(late.status).toBe(422);
+    expect(((await late.json()) as { detail: string }).detail).toBe('Připomínka musí být před uzávěrkou (16:00).');
+    expect((await c.put('/api/me/preferences', { reminderEnabled: false, reminderTime: '18:00' }, ALICE)).status).toBe(200);
     expect(((await (await c.get('/api/me', ADM)).json()) as Record<string, unknown>).isAdmin).toBe(true);
   });
 

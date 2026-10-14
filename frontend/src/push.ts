@@ -13,18 +13,6 @@ export function pushSupported(): boolean {
   return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 }
 
-export function isIos(): boolean {
-  const ua = navigator.userAgent;
-  return /iP(hone|ad|od)/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-}
-
-export function isStandalone(): boolean {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (navigator as Navigator & { standalone?: boolean }).standalone === true
-  );
-}
-
 async function registration(): Promise<ServiceWorkerRegistration> {
   const timeout = new Promise<never>((_, reject) =>
     window.setTimeout(() => reject(new Error('Service worker není aktivní (zkus stránku obnovit).')), 10000),

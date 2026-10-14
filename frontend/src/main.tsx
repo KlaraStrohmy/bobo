@@ -11,9 +11,12 @@ import { registerSW } from 'virtual:pwa-register';
 import { enableDevMode, fetchConfig, setLogoutHandler, setTokenProvider } from './api';
 import { ConfigContext } from './config';
 import App from './App';
+import { captureInstallEvents } from './install';
 import './fonts.css';
 import './styles.css';
 
+// Before anything async: Chromium may fire `beforeinstallprompt` right after load.
+captureInstallEvents();
 registerSW({ immediate: true });
 
 const root = createRoot(document.getElementById('root')!);

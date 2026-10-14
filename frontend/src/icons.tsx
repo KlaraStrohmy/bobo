@@ -157,6 +157,60 @@ const PATHS = {
       <path d="M21 12H9" />
     </>
   ),
+  moreVertical: (
+    <>
+      <circle cx="12" cy="5" r="1.4" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+      <circle cx="12" cy="19" r="1.4" fill="currentColor" />
+    </>
+  ),
+  moreHorizontal: (
+    <>
+      <circle cx="5" cy="12" r="1.4" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+      <circle cx="19" cy="12" r="1.4" fill="currentColor" />
+    </>
+  ),
+  menu: <path d="M4 6h16M4 12h16M4 18h16" />,
+  monitorDown: (
+    <>
+      <rect width="20" height="14" x="2" y="3" rx="2" />
+      <path d="M12 6.5v6M9 10l3 3 3-3M8 21h8M12 17v4" />
+    </>
+  ),
+  appsPlus: (
+    <>
+      <rect width="7" height="7" x="3" y="3" rx="1.5" />
+      <rect width="7" height="7" x="3" y="14" rx="1.5" />
+      <rect width="7" height="7" x="14" y="14" rx="1.5" />
+      <path d="M17.5 3v7M14 6.5h7" />
+    </>
+  ),
+  dock: (
+    <>
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="M2 16h20M7 19.5h.01M12 19.5h.01M17 19.5h.01" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect width="13" height="13" x="9" y="9" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </>
+  ),
+  externalLink: (
+    <>
+      <path d="M15 3h6v6M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="m7 10 5 5 5-5M12 15V3" />
+    </>
+  ),
+  chevronDown: <path d="m6 9 6 6 6-6" />,
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof PATHS;

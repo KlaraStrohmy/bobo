@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { api, canLogout, DEFAULT_DEV_USER, DEV_USER_KEY, errorMessage, getDevUser, isDevMode, logout } from '../api';
+import { signOut } from '../account';
+import { api, ApiError, canLogout, DEFAULT_DEV_USER, DEV_USER_KEY, errorMessage, getDevUser, isDevMode } from '../api';
 import { useConfig } from '../config';
 import { Avatar, Callout, Toggle } from '../components';
 import { Icon, type IconName } from '../icons';
-import { currentSubscription, isIos, isStandalone, pushSupported, subscribe, unsubscribe } from '../push';
+import { InstallGuide, useInstall } from '../installGuide';
+import { currentSubscription, pushSupported, subscribe, unsubscribe } from '../push';
 import { useToast } from '../toast';
 import type { Me } from '../types';
 
@@ -16,6 +18,14 @@ const SUB_VIEW: Record<SubState, { icon: IconName; tone: string; title: string }
   unknown: { icon: 'bell', tone: 'off', title: 'Zjišťuji stav…' },
 };
 
+/** "16:00" → "15:59"; null for a deadline with no valid time before it. */
+function minuteBefore(hhmm: string): string | null {
+  const [h, m] = hhmm.split(':').map(Number);
+  const total = h * 60 + m - 1;
+  if (!Number.isFinite(total) || total < 0) return null;
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
 export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (m: Me) => void }) {
   const toast = useToast();
   const { vapidPublicKey } = useConfig();
@@ -26,9 +36,27 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
   const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(
     'Notification' in window ? Notification.permission : 'unsupported',
   );
-  const iosNeedsInstall = isIos() && !isStandalone();
+  const [timeError, setTimeError] = useState<string | null>(null);
+  const install = useInstall();
+  const iosNeedsInstall = install.env.platform === 'ios' && !install.installed;
+
+  // Older backends may not send these yet: treat missing as "no restriction".
+  const deadline = me.reminderDeadline ?? null;
+  const possible = me.remindersPossible !== false;
+  const maxTime = deadline ? minuteBefore(deadline) : null;
+  const savedTooLate = me.reminderEnabled && possible && deadline !== null && me.reminderTime >= deadline;
 
   useEffect(() => setTime(me.reminderTime), [me.reminderTime]);
+
+  const validateTime = (t: string): string | null => {
+    if (!/^\d{2}:\d{2}$/.test(t)) return 'Zadej čas ve formátu HH:MM.';
+    if (deadline && t >= deadline) {
+      return maxTime
+        ? `Připomínka musí být před uzávěrkou (${deadline}) — nejpozději v ${maxTime}.`
+        : `Připomínka musí být před uzávěrkou (${deadline}).`;
+    }
+    return null;
+  };
 
   const refreshSub = async () => {
     if (!pushSupported()) {
@@ -46,19 +74,27 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
     void refreshSub();
   }, []);
 
-  const savePrefs = async (reminderEnabled: boolean, reminderTime: string) => {
-    if (!/^\d{2}:\d{2}$/.test(reminderTime)) {
-      toast('Zadej čas ve formátu HH:MM', 'error');
+  /** `checkTime`: validate against the deadline (always when enabling or editing the time). */
+  const savePrefs = async (reminderEnabled: boolean, reminderTime: string, checkTime = reminderEnabled) => {
+    const invalid = checkTime ? validateTime(reminderTime) : null;
+    if (invalid) {
+      setTimeError(invalid);
       return;
     }
     setSaving(true);
     try {
       const updated = await api<Me>('/me/preferences', { method: 'PUT', body: { reminderEnabled, reminderTime } });
       onMeChange(updated);
+      setTimeError(null);
       toast(reminderEnabled ? `Připomínka nastavena na ${updated.reminderTime}` : 'Připomínka vypnuta', 'ok');
     } catch (e) {
-      toast(errorMessage(e), 'error');
-      setTime(me.reminderTime);
+      if (e instanceof ApiError && e.status === 422) {
+        // Keep the typed value so it can be corrected; the server says why it's wrong.
+        setTimeError(e.detail || 'Tenhle čas nejde nastavit.');
+      } else {
+        toast(errorMessage(e), 'error');
+        setTime(me.reminderTime);
+      }
     } finally {
       setSaving(false);
     }
@@ -107,6 +143,13 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
 
   const view = SUB_VIEW[sub];
 
+  const installSection = (
+    <>
+      <h2 className="group-label">Aplikace</h2>
+      <InstallGuide />
+    </>
+  );
+
   return (
     <div className="page">
       <header className="page-head">
@@ -125,39 +168,92 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
 
       <h2 className="group-label">Denní připomínka</h2>
       <section className="card group">
-        <div className="row">
+        <div className={`row ${possible || me.reminderEnabled ? '' : 'row-dim'}`}>
           <span className="row-icon tone-accent">
             <Icon name="bell" size={18} />
           </span>
           <div className="row-text">
             <span className="row-title">Připomínat oběd</span>
-            <span className="row-sub">Den předem, když se vaří a ještě nemáš odpověď.</span>
+            <span className="row-sub">Notifikace den před obědem.</span>
           </div>
-          <Toggle label="Připomínat oběd" hideLabel checked={me.reminderEnabled} disabled={saving} onChange={(v) => savePrefs(v, time)} />
+          <Toggle
+            label="Připomínat oběd"
+            name="reminder-enabled"
+            hideLabel
+            checked={me.reminderEnabled}
+            // Never trap an enabled reminder: switching it off stays possible.
+            disabled={saving || (!possible && !me.reminderEnabled)}
+            onChange={(v) => savePrefs(v, time)}
+          />
         </div>
-        <div className={`row ${me.reminderEnabled ? '' : 'row-dim'}`}>
+        <div className={`row ${me.reminderEnabled && possible ? '' : 'row-dim'}`}>
           <span className="row-icon tone-saffron">
             <Icon name="clock" size={18} />
           </span>
           <label className="row-text" htmlFor="reminder-time">
             <span className="row-title">Čas připomínky</span>
-            <span className="row-sub">Kdy ti přijde notifikace.</span>
+            <span className="row-sub">
+              {possible && maxTime ? `Nejpozději v ${maxTime}.` : 'Kdy ti přijde notifikace.'}
+            </span>
           </label>
           <input
             id="reminder-time"
-            className="time-input"
+            className={`time-input ${timeError ? 'is-invalid' : ''}`}
             type="time"
             value={time}
             step={60}
-            disabled={saving}
-            onChange={(e) => setTime(e.target.value)}
-            onBlur={() => time !== me.reminderTime && savePrefs(me.reminderEnabled, time)}
+            max={maxTime ?? undefined}
+            disabled={saving || !possible}
+            aria-invalid={timeError ? true : undefined}
+            aria-describedby={timeError ? 'reminder-time-error' : undefined}
+            onChange={(e) => {
+              setTime(e.target.value);
+              if (timeError) setTimeError(null);
+            }}
+            onBlur={() => time !== me.reminderTime && savePrefs(me.reminderEnabled, time, true)}
           />
         </div>
+        {timeError && (
+          <div className="row row-block row-error">
+            <p className="field-error" id="reminder-time-error" role="alert">
+              <Icon name="alert" size={16} />
+              {timeError}
+            </p>
+          </div>
+        )}
+        {!possible && (
+          <div className="row row-block">
+            <Callout kind="info">
+              Připomínky teď nefungují — uzávěrka přihlášek je víc než den předem, takže by připomínka den předem přišla až po ní.
+            </Callout>
+          </div>
+        )}
       </section>
+      {savedTooLate && (
+        <Callout>
+          Připomínka v {me.reminderTime} nepřijde — uzávěrka je v {deadline}. Nastav dřívější čas.
+        </Callout>
+      )}
       {me.reminderEnabled && sub === 'none' && (
         <Callout>Připomínka je zapnutá, ale toto zařízení nemá povolené notifikace — nic ti sem nepřijde.</Callout>
       )}
+      {possible && (
+        <p className="group-hint">
+          Připomínka se ptá na zítřek, pokud se zítra vaří a ještě jsi neodpověděl. Odpovědět jde přímo z notifikace do
+          uzávěrky{deadline ? ` (${deadline})` : ''}.
+          {install.env.platform === 'desktop' && (
+            <> Na počítači musí běžet prohlížeč (stačí na pozadí). Na telefonu s nainstalovanou aplikací notifikace přijdou vždy.</>
+          )}
+          {iosNeedsInstall && (
+            <>
+              {' '}
+              Na iPhonu přijdou jen do nainstalované aplikace — <a href="#install">postup instalace</a>.
+            </>
+          )}
+        </p>
+      )}
+
+      {iosNeedsInstall && installSection}
 
       <h2 className="group-label">Notifikace na tomto zařízení</h2>
       <section className="card group">
@@ -205,7 +301,7 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
         </div>
       </section>
 
-      {iosNeedsInstall && <IosInstallCard />}
+      {!iosNeedsInstall && installSection}
 
       {canLogout() && <AccountCard me={me} />}
 
@@ -227,12 +323,10 @@ function AccountCard({ me }: { me: Me }) {
   const toast = useToast();
   const [busy, setBusy] = useState(false);
 
-  async function signOut() {
+  async function onSignOut() {
     setBusy(true);
     try {
-      // Stop reminders on this device so they don't keep arriving for the signed-out user.
-      await unsubscribe().catch(() => undefined);
-      await logout();
+      await signOut();
     } catch (err) {
       toast(errorMessage(err), 'error');
       setBusy(false);
@@ -250,45 +344,12 @@ function AccountCard({ me }: { me: Me }) {
             <div className="account-email">{me.email}</div>
           </div>
         </div>
-        <button className="btn btn-block btn-signout" disabled={busy} onClick={signOut}>
+        <button className="btn btn-block btn-signout" disabled={busy} onClick={onSignOut}>
           <Icon name="logout" size={17} />
           {busy ? 'Odhlašuji…' : 'Odhlásit se'}
         </button>
       </section>
     </>
-  );
-}
-
-function IosInstallCard() {
-  const steps: { icon: IconName; title: string; text: string }[] = [
-    { icon: 'share', title: 'Klepni na Sdílet', text: 'Ikona se šipkou dole v Safari.' },
-    { icon: 'plusSquare', title: 'Přidat na plochu', text: 'Najdeš ji v nabídce níž.' },
-    { icon: 'smartphone', title: 'Otevři Bobo z plochy', text: 'Pak tady povol notifikace.' },
-  ];
-  return (
-    <section className="card ios-card" aria-label="Instalace na iPhone">
-      <div className="ios-head">
-        <img src="/favicon.svg" alt="" width={44} height={44} />
-        <div>
-          <h2>Přidej si Bobo na plochu</h2>
-          <p>Na iPhonu fungují notifikace jen v nainstalované aplikaci.</p>
-        </div>
-      </div>
-      <ol className="steps">
-        {steps.map((s, i) => (
-          <li key={s.title}>
-            <span className="step-icon">
-              <Icon name={s.icon} size={20} />
-              <span className="step-num">{i + 1}</span>
-            </span>
-            <span className="step-text">
-              <strong>{s.title}</strong>
-              <span>{s.text}</span>
-            </span>
-          </li>
-        ))}
-      </ol>
-    </section>
   );
 }
 

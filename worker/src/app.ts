@@ -19,6 +19,7 @@ import {
 } from './calendar';
 import type { Env } from './env';
 import { sendToUser } from './push';
+import { reminderDeadline, reminderTimeAllowed } from './reminders';
 import { ExpiredToken, InvalidToken, verifyToken } from './pushTokens';
 import { dateRange, daysBetween, localParts, parseDate, parseHhmm } from './tz';
 
@@ -108,6 +109,7 @@ const userAdminJson = (u: UserRow) => ({
 
 async function meJson(env: Env, user: UserRow) {
   const sub = await env.DB.prepare('SELECT 1 FROM push_subscriptions WHERE user_id = ?1 LIMIT 1').bind(user.id).first();
+  const cs = await loadSettings(env.DB);
   return {
     id: user.id,
     email: user.email,
@@ -116,6 +118,8 @@ async function meJson(env: Env, user: UserRow) {
     reminderEnabled: user.reminder_enabled === 1,
     reminderTime: user.reminder_time,
     pushSubscribed: sub !== null,
+    reminderDeadline: reminderDeadline(cs),
+    remindersPossible: cs.cutoffDaysBefore <= 1,
   };
 }
 
@@ -199,6 +203,14 @@ export function createApp(options: AppOptions = {}) {
     const body = await jsonBody(c);
     const enabled = field(body, 'reminderEnabled', isBool, 'boolean');
     const time = hhmmValue(field(body, 'reminderTime', isString, 'string'), 'reminderTime');
+    const cs = await loadSettings(c.env.DB);
+    if (enabled && !reminderTimeAllowed(time, cs)) {
+      throw invalid(
+        cs.cutoffDaysBefore <= 1
+          ? `Připomínka musí být před uzávěrkou (${cs.cutoffTime}).`
+          : 'Při současné uzávěrce nejde připomínku den předem použít.',
+      );
+    }
     const user = await c.env.DB.prepare('UPDATE users SET reminder_enabled = ?1, reminder_time = ?2 WHERE id = ?3 RETURNING *')
       .bind(enabled ? 1 : 0, time, c.get('user').id)
       .first<UserRow>();

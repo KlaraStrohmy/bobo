@@ -94,6 +94,7 @@ export function errorMessage(err: unknown): string {
     if (err.status === 400) return `Neplatný požadavek: ${err.detail}`;
     if (err.status === 401) return 'Nejsi přihlášený.';
     if (err.status === 403) return 'Na tohle nemáš oprávnění.';
+    if (err.status === 422 && err.detail) return err.detail;
     return `Chyba serveru (${err.status}): ${err.detail}`;
   }
   if (err instanceof Error) return err.message;

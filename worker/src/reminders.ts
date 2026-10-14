@@ -5,7 +5,8 @@ import { sendToUser, type PushDeps } from './push';
 import { makeToken } from './pushTokens';
 import { addDays, isoWeekday, localParts } from './tz';
 
-const WEEKDAYS_CS = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
+/** "Oběd ve čtvrtek 15. 10.?" — weekday with its Czech preposition. */
+const ON_WEEKDAY_CS = ['v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek', 'v sobotu', 'v neděli'];
 
 export interface ReminderCandidate {
   id: string;
@@ -62,11 +63,26 @@ export async function dueReminders(db: D1Database, now: Date): Promise<{ target:
   return { target, userIds: selectReminderUsers(candidates, now, ids(answered), ids(logged)) };
 }
 
-export function reminderPayload(day: string, token: string) {
+/**
+ * Whether a reminder at `time` (HH:MM) can still ask about tomorrow: the day-before reminder
+ * only works when tomorrow's cutoff is later than the reminder.
+ */
+export function reminderTimeAllowed(time: string, cs: CalendarSettings): boolean {
+  if (cs.cutoffDaysBefore === 0) return true;
+  return cs.cutoffDaysBefore === 1 && time < cs.cutoffTime;
+}
+
+/** Latest reminder time (exclusive) for the UI; null when any time works. */
+export function reminderDeadline(cs: CalendarSettings): string | null {
+  return cs.cutoffDaysBefore === 0 ? null : cs.cutoffTime;
+}
+
+export function reminderPayload(day: string, token: string, cutoffTime?: string) {
   const [, m, d] = day.split('-').map(Number);
+  const answerBy = cutoffTime ? ` Odpověz do ${cutoffTime}.` : '';
   return {
-    title: 'Oběd zítra?',
-    body: `${WEEKDAYS_CS[isoWeekday(day) - 1]} ${d}. ${m}. — budeš obědvat?`,
+    title: `Oběd ${ON_WEEKDAY_CS[isoWeekday(day) - 1]} ${d}. ${m}.?`,
+    body: `Zítra se vaří — budeš obědvat?${answerBy}`,
     date: day,
     token,
     url: `/?date=${day}`,
@@ -94,10 +110,13 @@ export async function runReminders(env: Env, now: Date, deps: PushDeps = {}): Pr
     ),
   );
   const toSend = inserted.flatMap((r) => r.results.map((x) => x.user_id));
-  const expires = cutoffAt(target, await loadSettings(db));
+  const cs = await loadSettings(db);
+  const expires = cutoffAt(target, cs);
+  // "Odpověz do 16:00" only reads right when the cutoff is today.
+  const answerBy = cs.cutoffDaysBefore === 1 ? cs.cutoffTime : undefined;
   for (const uid of toSend) {
     try {
-      const payload = reminderPayload(target, await makeToken(secret, uid, target, expires));
+      const payload = reminderPayload(target, await makeToken(secret, uid, target, expires), answerBy);
       await sendToUser(env, uid, payload, deps);
     } catch (err) {
       console.error(`reminder push failed for ${uid}:`, err);
