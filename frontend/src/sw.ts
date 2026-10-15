@@ -28,6 +28,8 @@ interface NotificationData {
 }
 
 const ICON = '/icon-192.png';
+// Status-bar icon on Android: monochrome silhouette, only its alpha channel is used.
+const BADGE = '/badge-96.png';
 
 // `actions` is supported by Chromium/Firefox but missing from TypeScript's lib typings.
 type NotificationOptionsWithActions = NotificationOptions & { actions?: { action: string; title: string }[] };
@@ -55,7 +57,7 @@ self.addEventListener('push', (event) => {
   const options: NotificationOptionsWithActions = {
     body: payload.body ?? '',
     icon: ICON,
-    badge: ICON,
+    badge: BADGE,
     tag: payload.date ? `bobo-${payload.date}` : 'bobo',
     data,
     actions: payload.token
@@ -84,7 +86,7 @@ async function answer(data: NotificationData, attending: boolean): Promise<void>
     const date = formatDate(body.date ?? data.date);
     await self.registration.showNotification(`Zapsáno: ${attending ? 'obědváš' : 'neobědváš'} ${date}`, {
       icon: ICON,
-      badge: ICON,
+      badge: BADGE,
       tag,
       data: { url: data.url },
     });
@@ -93,7 +95,7 @@ async function answer(data: NotificationData, attending: boolean): Promise<void>
     await self.registration.showNotification('Odpověď se nepodařilo uložit', {
       body: `${reason[0].toUpperCase()}${reason.slice(1)}. Klepni a vyplň to v aplikaci.`,
       icon: ICON,
-      badge: ICON,
+      badge: BADGE,
       tag,
       data: { url: data.url },
     });

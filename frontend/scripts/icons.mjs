@@ -6,6 +6,7 @@ import { Resvg } from '@resvg/resvg-js';
 const pub = new URL('../public/', import.meta.url);
 const logo = readFileSync(new URL('favicon.svg', pub), 'utf8');
 const maskable = readFileSync(new URL('../scripts/maskable.svg', pub), 'utf8');
+const badge = readFileSync(new URL('badge.svg', pub), 'utf8');
 
 const render = (svg, size, name) => {
   const png = new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng();
@@ -17,3 +18,4 @@ render(logo, 192, 'icon-192.png');
 render(logo, 512, 'icon-512.png');
 render(maskable, 512, 'icon-maskable-512.png');
 render(maskable, 180, 'apple-touch-icon.png');
+render(badge, 96, 'badge-96.png');
