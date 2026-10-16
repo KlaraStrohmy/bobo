@@ -1,6 +1,7 @@
 import { StrictMode, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+  BrowserAuthError,
   InteractionRequiredAuthError,
   InteractionStatus,
   PublicClientApplication,
@@ -56,6 +57,19 @@ function Splash({ text, error }: { text: string; error?: boolean }) {
   );
 }
 
+/** Guards against a redirect loop: at most one silent-failure redirect per 30 seconds. */
+function redirectedRecently(): boolean {
+  try {
+    const last = Number(sessionStorage.getItem('bobo.authRedirectAt') ?? 0);
+    const now = Date.now();
+    if (now - last < 30_000) return true;
+    sessionStorage.setItem('bobo.authRedirectAt', String(now));
+  } catch {
+    // sessionStorage unavailable: allow the redirect
+  }
+  return false;
+}
+
 async function bootstrap(): Promise<void> {
   root.render(<Splash text="Načítám…" />);
   const config = await fetchConfig();
@@ -103,7 +117,12 @@ async function bootstrap(): Promise<void> {
       const res = await pca.acquireTokenSilent({ ...loginRequest, account });
       return res.accessToken;
     } catch (err) {
-      if (err instanceof InteractionRequiredAuthError) {
+      // The silent fallback runs in a hidden iframe, which times out when third-party cookies
+      // are blocked (Safari). Any of these means: sign in again with a normal redirect.
+      const needsRedirect =
+        err instanceof InteractionRequiredAuthError ||
+        (err instanceof BrowserAuthError && /timed_out|iframe|monitor_window|empty_window|hash_empty/.test(err.errorCode));
+      if (needsRedirect && !redirectedRecently()) {
         await pca.acquireTokenRedirect({ ...loginRequest, account });
         throw new Error('Přesměrovávám na přihlášení…');
       }
