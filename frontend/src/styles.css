@@ -3099,37 +3099,25 @@ h3 {
   --ink: #2b1f3f;
   --ink-2: #4d3f66;
 }
-.hero::before,
-.hero::after {
+.hero::before {
+  content: "🍝";
   position: absolute;
   z-index: -1;
-  font-size: 22px;
+  right: 178px;
+  top: 14px;
+  font-size: 18px;
   line-height: 1;
   pointer-events: none;
-}
-.hero::before {
-  content: '🍝';
-  right: 96px;
-  top: 12px;
-  font-size: 18px;
   transform: rotate(14deg);
 }
-.hero::after {
-  content: '🥗';
-  right: 22px;
-  bottom: 74px;
-  font-size: 30px;
-  transform: rotate(-6deg);
-}
-.hero-skeleton::before,
-.hero-skeleton::after {
+.hero-skeleton::before {
   content: none;
 }
 .hero-art {
   z-index: 0;
-  right: 14px;
-  top: 14px;
-  width: 128px;
+  right: 8px;
+  top: 8px;
+  width: 160px;
   height: auto;
   fill: none;
   stroke: none;
@@ -3226,4 +3214,7 @@ h3 {
 .hero-skeleton {
   background: var(--surface);
   border: 2px solid var(--line);
+}
+.hero-row {
+  padding-right: 140px;
 }

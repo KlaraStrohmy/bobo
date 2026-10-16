@@ -244,23 +244,12 @@ function Hero({
   }
   return (
     <section className="hero" aria-label="Nejbližší oběd">
-      <svg className="hero-art" viewBox="0 0 160 150" aria-hidden>
-        <g stroke="#2b1f3f" strokeWidth="4" opacity="0.4" fill="none">
-          <path d="M52 30c-8-8 8-14 0-24" />
-          <path d="M80 26c-8-8 8-14 0-24" />
-          <path d="M108 30c-8-8 8-14 0-24" />
-        </g>
+      <svg className="hero-art" viewBox="0 -30 160 180" aria-hidden>
+        <image href="/bobo-head.png" x="42" y="-26" width="76" height="110" />
         <g stroke="#2b1f3f" strokeWidth="5">
-          <path d="M34 84C34 52 58 38 80 38s46 14 46 46z" fill="#fff4dc" />
-          <path d="M80 38v12M62 42l4 10M98 42l-4 10" fill="none" strokeWidth="3" opacity="0.35" />
           <path d="M16 84h128c0 34-26 54-64 54S16 118 16 84z" fill="#ff7d66" />
           <rect x="10" y="78" width="140" height="14" rx="7" fill="#ff7d66" />
         </g>
-        <circle cx="62" cy="68" r="4.5" fill="#2b1f3f" />
-        <circle cx="98" cy="68" r="4.5" fill="#2b1f3f" />
-        <ellipse cx="50" cy="76" rx="7" ry="4.5" fill="#ff7d66" opacity="0.55" />
-        <ellipse cx="110" cy="76" rx="7" ry="4.5" fill="#ff7d66" opacity="0.55" />
-        <path d="M72 74q8 9 16 0" fill="none" stroke="#2b1f3f" strokeWidth="3.5" strokeLinecap="round" />
         <g fill="#fff4dc">
           <circle cx="50" cy="112" r="3" />
           <circle cx="64" cy="118" r="3" />
