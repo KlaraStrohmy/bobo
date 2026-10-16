@@ -153,6 +153,12 @@ export default function LunchesPage({ me }: { me: Me }) {
   return (
     <div className="page">
       <InstallBanner />
+      <div className="vote-row">
+        <button type="button" className="vote-btn" onClick={() => toast('Hlasování o receptech připravujeme 🍜', 'ok')}>
+          <img src="/ramen.png" alt="" width={72} height={79} />
+          <span>Hlasuj!</span>
+        </button>
+      </div>
       <Hero
         greet={`${greeting()}${name ? `, ${name}` : ''}`}
         next={next}
