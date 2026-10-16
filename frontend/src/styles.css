@@ -3302,3 +3302,20 @@ h3 {
   right: 116px;
   top: 0;
 }
+/* cow on the left, pig on the right: both faces stay clear of the head */
+.hero::before {
+  right: 118px;
+  top: 2px;
+  width: 118px;
+  height: 90px;
+  background-image: url("/cow.svg");
+  transform: rotate(-3deg);
+}
+.hero::after {
+  right: -6px;
+  top: 26px;
+  width: 106px;
+  height: 85px;
+  background-image: url("/pig.svg");
+  transform: rotate(4deg);
+}
