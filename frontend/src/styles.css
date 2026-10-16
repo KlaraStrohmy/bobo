@@ -3266,3 +3266,18 @@ h3 {
   right: 152px;
   top: 10px;
 }
+.hero::before {
+  right: 142px;
+  top: 2px;
+  width: 76px;
+  height: 62px;
+}
+.hero::after {
+  right: -8px;
+  top: 4px;
+  width: 92px;
+  height: 70px;
+}
+.hero::before {
+  right: 124px;
+}
