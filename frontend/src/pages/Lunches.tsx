@@ -14,6 +14,7 @@ import {
   weekdayShort,
 } from '../dates';
 import { ErrorState, firstName, Segmented, Skeleton, type Answer } from '../components';
+import { Cow, moodFor, Pig } from '../farmAnimals';
 import { Icon } from '../icons';
 import { InstallBanner } from '../installGuide';
 import { useToast } from '../toast';
@@ -242,8 +243,11 @@ function Hero({
   if (next) {
     headline = next.date === today ? 'Dnes se vaří' : next.date === addDays(today, 1) ? 'Zítra se vaří' : 'Příště se vaří';
   }
+  const mood = moodFor(next?.attending);
   return (
     <section className="hero" aria-label="Nejbližší oběd">
+      <Cow mood={mood} className="hero-cow" />
+      <Pig mood={mood} className="hero-pig" />
       <svg className="hero-art" viewBox="0 -104 160 254" aria-hidden>
         <g stroke="#2b1f3f" strokeWidth="5" opacity="0.55" fill="none">
           <path d="M54 -78c-9-9 9-15 0-26" />

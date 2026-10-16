@@ -3116,7 +3116,6 @@ h3 {
   top: 14px;
   width: 50px;
   height: 40px;
-  background-image: url("/pig.svg");
   transform: rotate(-6deg);
 }
 .hero::after {
@@ -3124,7 +3123,6 @@ h3 {
   top: 10px;
   width: 58px;
   height: 44px;
-  background-image: url("/cow.svg");
   transform: rotate(4deg);
 }
 .hero-skeleton::before,
@@ -3308,7 +3306,6 @@ h3 {
   top: 2px;
   width: 118px;
   height: 90px;
-  background-image: url("/cow.svg");
   transform: rotate(-3deg);
 }
 .hero::after {
@@ -3316,6 +3313,60 @@ h3 {
   top: 26px;
   width: 106px;
   height: 85px;
-  background-image: url("/pig.svg");
   transform: rotate(4deg);
+}
+/* farm animals behind the head; faces react to the next lunch answer */
+.hero::before,
+.hero::after {
+  content: none;
+}
+.hero .animal {
+  position: absolute;
+  z-index: -1;
+  height: auto;
+  pointer-events: none;
+}
+.hero-cow {
+  right: 118px;
+  top: 2px;
+  width: 120px;
+  transform: rotate(-3deg);
+}
+.hero-pig {
+  right: -6px;
+  top: 26px;
+  width: 110px;
+  transform: rotate(4deg);
+}
+.animal .mouth {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 420ms var(--ease-spring);
+}
+.animal.is-sad .mouth {
+  transform: scaleY(-1) translateY(-2px);
+}
+.animal.is-neutral .mouth {
+  transform: scaleY(0.22);
+}
+.animal .eye-open,
+.animal .eye-happy,
+.animal .brow {
+  transition: opacity var(--dur-2) var(--ease);
+}
+.animal .eye-happy,
+.animal .brow {
+  opacity: 0;
+}
+.animal.is-happy .eye-happy,
+.animal.is-sad .brow {
+  opacity: 1;
+}
+.animal.is-happy .eye-open {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animal .mouth {
+    transition: none;
+  }
 }
