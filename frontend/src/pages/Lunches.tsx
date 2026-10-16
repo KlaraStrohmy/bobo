@@ -156,22 +156,14 @@ export default function LunchesPage({ me }: { me: Me }) {
   return (
     <div className="page">
       <InstallBanner />
-      <div className="top-row">
-        <div className="vote-row">
-          <button type="button" className="vote-btn" onClick={() => toast('Hlasování o receptech připravujeme 🍜', 'ok')}>
-            <img src="/ramen.png" alt="" width={72} height={79} />
-            <span>Hlasuj!</span>
-          </button>
-        </div>
-        <Hero
-          greet={`${greeting()}${name ? `, ${name}` : ''}`}
-          next={next}
-          today={today}
-          answered={answered}
-          total={cookingDays.length}
-          onAnswer={setAnswer}
-        />
-      </div>
+      <Hero
+        greet={`${greeting()}${name ? `, ${name}` : ''}`}
+        next={next}
+        today={today}
+        answered={answered}
+        total={cookingDays.length}
+        onAnswer={setAnswer}
+      />
 
       {loadError && <ErrorState text={loadError} onRetry={() => void load()} />}
 
@@ -199,6 +191,13 @@ export default function LunchesPage({ me }: { me: Me }) {
           </button>
         </div>
       </section>
+
+      <div className="vote-row">
+        <button type="button" className="vote-btn" onClick={() => toast('Hlasování o receptech připravujeme 🍜', 'ok')}>
+          <img src="/ramen.png" alt="" width={72} height={79} />
+          <span>Hlasuj!</span>
+        </button>
+      </div>
 
       {weeks.length === 0 && (
         <div className="empty">

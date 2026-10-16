@@ -3648,3 +3648,30 @@ h3 {
 .hero-row {
   row-gap: 24px;
 }
+
+/* "Hlasuj!" always sits under the quick-fill chips, centered, on every screen size */
+.vote-row {
+  justify-content: center;
+  margin: 14px 0 4px;
+}
+.vote-btn img {
+  width: 96px;
+}
+.vote-btn span {
+  font-size: 19px;
+  padding: 2px 15px 4px;
+}
+@media (min-width: 820px) {
+  .top-row {
+    display: block;
+  }
+  .top-row > .vote-row {
+    margin: 14px 0 4px;
+  }
+  .vote-btn img {
+    width: 96px;
+  }
+  .vote-btn span {
+    font-size: 19px;
+  }
+}
