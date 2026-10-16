@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { Chicken } from './chicken';
 import { Icon, type IconName } from './icons';
 
 export type Answer = boolean | null;
@@ -20,14 +21,16 @@ export function Segmented({
   size?: 'sm' | 'md';
   label?: string;
 }) {
-  const opts: { v: boolean; text: string; cls: string; icon: IconName }[] = [
-    { v: true, text: 'Ano', cls: 'yes', icon: 'check' },
-    { v: false, text: 'Ne', cls: 'no', icon: 'x' },
+  const opts: { v: boolean; text: string; cls: string }[] = [
+    { v: true, text: 'Ano', cls: 'yes' },
+    { v: false, text: 'Ne', cls: 'no' },
   ];
   const state = value === true ? 'is-yes' : value === false ? 'is-no' : 'is-none';
   return (
     <div className={`seg seg-${size} ${state}`} role="group" aria-label={label}>
-      <span className="seg-thumb" aria-hidden />
+      <span className="seg-thumb" aria-hidden>
+        <Chicken className="seg-chicken" />
+      </span>
       {opts.map((o) => {
         const on = value === o.v;
         return (
@@ -40,7 +43,6 @@ export function Segmented({
             disabled={disabled}
             onClick={() => onChange(on ? null : o.v)}
           >
-            <Icon name={o.icon} size={size === 'sm' ? 14 : 16} strokeWidth={2.6} className="seg-icon" />
             <span>{o.text}</span>
           </button>
         );

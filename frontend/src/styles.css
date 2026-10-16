@@ -3370,3 +3370,157 @@ h3 {
     transition: none;
   }
 }
+
+/* ==========================================================================
+   Ano / Ne switch: a roast chicken hops between the options instead of a pill
+   ========================================================================== */
+.seg .seg-thumb,
+.seg.is-yes .seg-thumb,
+.seg.is-no .seg-thumb,
+.hero .seg .seg-thumb,
+.hero .seg.is-yes .seg-thumb,
+.hero .seg.is-no .seg-thumb {
+  top: 50%;
+  bottom: auto;
+  left: 7px;
+  width: 38px;
+  height: 31px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.4) rotate(-20deg);
+  transition:
+    left 420ms var(--ease-spring),
+    transform 420ms var(--ease-spring),
+    opacity var(--dur-2) var(--ease),
+    filter var(--dur-3) var(--ease);
+}
+.seg-chicken {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.seg.is-yes .seg-thumb,
+.hero .seg.is-yes .seg-thumb {
+  opacity: 1;
+  transform: translateY(-52%) scale(1) rotate(-6deg);
+}
+.seg.is-no .seg-thumb,
+.hero .seg.is-no .seg-thumb {
+  left: calc(50% + 6px);
+  opacity: 1;
+  transform: translateY(-46%) scale(0.92) rotate(10deg);
+  filter: grayscale(0.75) brightness(1.08) opacity(0.85);
+}
+.seg-sm .seg-thumb,
+.seg-sm.is-yes .seg-thumb,
+.seg-sm.is-no .seg-thumb {
+  width: 32px;
+  height: 26px;
+  left: 6px;
+}
+.seg-sm.is-no .seg-thumb {
+  left: calc(50% + 5px);
+}
+/* the label makes room for the chicken; columns stay equal so nothing jumps */
+.seg-md .seg-opt {
+  min-width: 92px;
+}
+.seg-sm .seg-opt {
+  min-width: 74px;
+}
+.seg-opt {
+  transition:
+    color var(--dur-2) var(--ease),
+    background var(--dur-2) var(--ease),
+    padding var(--dur-3) var(--ease-spring),
+    transform var(--dur-1) var(--ease);
+}
+.seg-md .seg-opt.on {
+  padding-left: 46px;
+}
+.seg-sm .seg-opt.on {
+  padding-left: 38px;
+}
+.seg-opt.on {
+  animation: none;
+}
+.seg-yes.on,
+.hero .seg-yes.on {
+  color: var(--yes-text);
+  background: var(--yes-soft);
+}
+.seg-no.on,
+.hero .seg-no.on {
+  color: var(--no-text);
+  background: var(--no-soft);
+}
+@media (prefers-reduced-motion: reduce) {
+  .seg .seg-thumb {
+    transition: opacity var(--dur-2) var(--ease);
+  }
+}
+/* chicken rides above the tinted option */
+.seg .seg-thumb {
+  z-index: 2;
+  pointer-events: none;
+}
+.seg-md .seg-opt {
+  min-width: 84px;
+}
+.seg-md .seg-opt.on {
+  padding-left: 42px;
+}
+@media (max-width: 479px) {
+  .seg-md .seg-opt {
+    min-width: 70px;
+    padding: 0 9px;
+  }
+  .seg-md .seg-opt.on {
+    padding-left: 34px;
+  }
+  .seg-md .seg-thumb,
+  .seg-md.is-yes .seg-thumb,
+  .seg-md.is-no .seg-thumb,
+  .hero .seg-md .seg-thumb,
+  .hero .seg-md.is-yes .seg-thumb,
+  .hero .seg-md.is-no .seg-thumb {
+    width: 31px;
+    height: 26px;
+    left: 6px;
+  }
+  .seg-md.is-no .seg-thumb,
+  .hero .seg-md.is-no .seg-thumb {
+    left: calc(50% + 4px);
+  }
+}
+/* chicken viewBox is 68 x 62 */
+.seg .seg-thumb,
+.seg.is-yes .seg-thumb,
+.seg.is-no .seg-thumb,
+.hero .seg .seg-thumb,
+.hero .seg.is-yes .seg-thumb,
+.hero .seg.is-no .seg-thumb {
+  width: 38px;
+  height: 35px;
+}
+.seg-sm .seg-thumb,
+.seg-sm.is-yes .seg-thumb,
+.seg-sm.is-no .seg-thumb {
+  width: 32px;
+  height: 29px;
+}
+@media (max-width: 479px) {
+  .seg-md .seg-thumb,
+  .seg-md.is-yes .seg-thumb,
+  .seg-md.is-no .seg-thumb,
+  .hero .seg-md .seg-thumb,
+  .hero .seg-md.is-yes .seg-thumb,
+  .hero .seg-md.is-no .seg-thumb {
+    width: 32px;
+    height: 29px;
+  }
+}
