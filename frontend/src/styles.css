@@ -3644,3 +3644,7 @@ h3 {
     padding: 2px 16px 4px;
   }
 }
+/* the chicken sticks out above its track: keep the status text clear of it */
+.hero-row {
+  row-gap: 24px;
+}

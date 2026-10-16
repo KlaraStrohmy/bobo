@@ -92,19 +92,22 @@ export default function LunchesPage({ me }: { me: Me }) {
     });
   }, [days, highlight]);
 
+  // Today is dropped once its cutoff has passed: it can no longer be answered, so it only clutters the list.
+  const shownDays = useMemo(() => days?.filter((d) => !(d.date === today && d.locked)) ?? null, [days, today]);
+
   const weeks = useMemo<Week[]>(() => {
-    if (!days) return [];
+    if (!shownDays) return [];
     const byWeek = new Map<string, Day[]>();
-    for (const d of days) {
+    for (const d of shownDays) {
       if (!d.cooking && !d.isOverride) continue; // regular non-cooking day
       const m = mondayOf(d.date);
       if (!byWeek.has(m)) byWeek.set(m, []);
       byWeek.get(m)!.push(d);
     }
     return [...byWeek.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([monday, ds]) => ({ monday, days: ds }));
-  }, [days]);
+  }, [shownDays]);
 
-  const cookingDays = useMemo(() => days?.filter((d) => d.cooking) ?? [], [days]);
+  const cookingDays = useMemo(() => shownDays?.filter((d) => d.cooking) ?? [], [shownDays]);
   const answered = cookingDays.filter((d) => d.attending !== null).length;
   const next = cookingDays[0] ?? null;
 
