@@ -3099,18 +3099,36 @@ h3 {
   --ink: #2b1f3f;
   --ink-2: #4d3f66;
 }
-.hero::before {
-  content: "🍝";
+.hero::before,
+.hero::after {
   position: absolute;
-  z-index: -1;
-  right: 178px;
-  top: 14px;
-  font-size: 18px;
+  z-index: 1;
   line-height: 1;
   pointer-events: none;
-  transform: rotate(14deg);
 }
-.hero-skeleton::before {
+.hero::before,
+.hero::after {
+  content: "";
+  background: no-repeat center / contain;
+}
+.hero::before {
+  right: 168px;
+  top: 14px;
+  width: 50px;
+  height: 40px;
+  background-image: url("/pig.svg");
+  transform: rotate(-6deg);
+}
+.hero::after {
+  right: 0;
+  top: 10px;
+  width: 58px;
+  height: 44px;
+  background-image: url("/cow.svg");
+  transform: rotate(4deg);
+}
+.hero-skeleton::before,
+.hero-skeleton::after {
   content: none;
 }
 .hero-art {
@@ -3228,4 +3246,23 @@ h3 {
 }
 .hero:not(.hero-skeleton) .hero-progress {
   margin-top: auto;
+}
+.hero-art {
+  right: 40px;
+}
+.hero-row {
+  padding-right: 160px;
+}
+.hero-art {
+  right: 24px;
+}
+.hero-row {
+  padding-right: 168px;
+}
+.hero-title {
+  font-size: 31px;
+}
+.hero::before {
+  right: 152px;
+  top: 10px;
 }
