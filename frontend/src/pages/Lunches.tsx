@@ -244,18 +244,23 @@ function Hero({
   }
   return (
     <section className="hero" aria-label="Nejbližší oběd">
-      <svg className="hero-art" viewBox="0 -30 160 180" aria-hidden>
-        <image href="/bobo-head.png" x="42" y="-26" width="76" height="110" />
+      <svg className="hero-art" viewBox="0 -104 160 254" aria-hidden>
+        <g stroke="#2b1f3f" strokeWidth="5" opacity="0.55" fill="none">
+          <path d="M54 -78c-9-9 9-15 0-26" />
+          <path d="M80 -82c-9-9 9-15 0-26" />
+          <path d="M106 -78c-9-9 9-15 0-26" />
+        </g>
+        <image href="/bobo-head.png" x="26" y="-70" width="108" height="157" />
         <g stroke="#2b1f3f" strokeWidth="5">
-          <path d="M16 84h128c0 34-26 54-64 54S16 118 16 84z" fill="#ff7d66" />
-          <rect x="10" y="78" width="140" height="14" rx="7" fill="#ff7d66" />
+          <path d="M26 84h108c0 30-22 48-54 48S26 114 26 84z" fill="#ff7d66" />
+          <rect x="20" y="78" width="120" height="14" rx="7" fill="#ff7d66" />
         </g>
         <g fill="#fff4dc">
-          <circle cx="50" cy="112" r="3" />
-          <circle cx="64" cy="118" r="3" />
-          <circle cx="80" cy="120" r="3" />
-          <circle cx="96" cy="118" r="3" />
-          <circle cx="110" cy="112" r="3" />
+          <circle cx="56" cy="107" r="3" />
+          <circle cx="68" cy="113" r="3" />
+          <circle cx="80" cy="115" r="3" />
+          <circle cx="92" cy="113" r="3" />
+          <circle cx="104" cy="107" r="3" />
         </g>
       </svg>
       <p className="hero-greet">{greet}</p>

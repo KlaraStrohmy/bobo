@@ -3218,3 +3218,14 @@ h3 {
 .hero-row {
   padding-right: 140px;
 }
+.hero:not(.hero-skeleton) {
+  display: flex;
+  flex-direction: column;
+  min-height: 292px;
+}
+.hero:not(.hero-skeleton) .hero-greet {
+  align-self: flex-start;
+}
+.hero:not(.hero-skeleton) .hero-progress {
+  margin-top: auto;
+}
