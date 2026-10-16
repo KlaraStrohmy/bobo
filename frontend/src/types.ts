@@ -73,3 +73,12 @@ export interface AdminUser {
   reminderEnabled: boolean;
   lastSeenAt: string | null;
 }
+
+export interface DishVotes {
+  /** Monday of the week being voted for. */
+  week: string;
+  maxVotes: number;
+  myVotes: string[];
+  /** `votes` is null until the user has voted themselves. */
+  dishes: { id: string; name: string; url: string | null; votes: number | null }[];
+}

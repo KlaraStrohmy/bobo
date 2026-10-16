@@ -17,10 +17,12 @@ import {
   settingsToApi,
   userCalendar,
 } from './calendar';
+import { isDishId } from './dishes';
 import type { Env } from './env';
 import { sendToUser } from './push';
 import { reminderDeadline, reminderTimeAllowed } from './reminders';
 import { ExpiredToken, InvalidToken, verifyToken } from './pushTokens';
+import { setVote, votesPayload, votingWeek } from './votes';
 import { dateRange, daysBetween, localParts, parseDate, parseHhmm } from './tz';
 
 const MAX_RANGE_DAYS = 92;
@@ -191,6 +193,8 @@ export function createApp(options: AppOptions = {}) {
   app.use('/me', auth);
   app.use('/me/*', auth);
   app.use('/calendar', auth);
+  app.use('/votes', auth);
+  app.use('/votes/*', auth);
   app.use('/responses/*', auth);
   app.use('/push/vapid-public-key', auth);
   app.use('/push/subscribe', auth);
@@ -241,6 +245,19 @@ export function createApp(options: AppOptions = {}) {
     if (status.locked) throw new HttpError(409, 'cutoff has passed');
     await setResponse(c.env.DB, c.get('user').id, day, attending, 'web');
     return c.json(dayJson(status, attending));
+  });
+
+  app.get('/votes', async (c) => c.json(await votesPayload(c.env.DB, c.get('user').id, c.get('now'))));
+
+  app.put('/votes/:dish', async (c) => {
+    const dish = c.req.param('dish');
+    if (!isDishId(dish)) throw new HttpError(404, 'unknown dish');
+    const voted = field(await jsonBody(c), 'voted', isBool, 'boolean');
+    const now = c.get('now');
+    const user = c.get('user');
+    const result = await setVote(c.env.DB, user.id, votingWeek(now), dish, voted, now);
+    if (result === 'limit') throw new HttpError(409, 'vote limit reached');
+    return c.json(await votesPayload(c.env.DB, user.id, now));
   });
 
   app.get('/push/vapid-public-key', (c) => c.json({ key: c.env.VAPID_PUBLIC_KEY ?? '' }));

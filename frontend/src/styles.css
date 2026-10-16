@@ -3680,3 +3680,200 @@ h3 {
   filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 2px 0 var(--outline))
     drop-shadow(0 -2px 0 var(--outline)) drop-shadow(0 5px 0 rgba(43, 31, 63, 0.25));
 }
+
+/* ==========================================================================
+   Hlasuj! page: vote for next week's dishes
+   ========================================================================== */
+.vote-page {
+  display: grid;
+  gap: 14px;
+}
+.vote-back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px 6px 8px;
+  border: var(--sticker-w) solid var(--outline);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 800;
+  box-shadow: 0 3px 0 var(--outline);
+}
+.vote-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.vote-head img {
+  flex: none;
+  width: 72px;
+  height: auto;
+  filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 2px 0 var(--outline))
+    drop-shadow(0 -2px 0 var(--outline));
+  transform: rotate(-5deg);
+}
+.vote-head h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1;
+}
+.vote-head p {
+  margin: 4px 0 0;
+  color: var(--ink-2);
+}
+.vote-meter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  color: var(--ink-2);
+}
+.vote-pips {
+  display: inline-flex;
+  gap: 6px;
+}
+.vote-pips i {
+  width: 22px;
+  height: 22px;
+  border: var(--sticker-w) solid var(--outline);
+  border-radius: 50%;
+  background: var(--surface);
+  transition: background var(--dur-2) var(--ease), transform var(--dur-2) var(--ease-spring);
+}
+.vote-pips i.on {
+  background: var(--accent);
+  transform: scale(1.12);
+}
+.vote-friday {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--saffron-soft);
+  font-size: 14.5px;
+}
+.vote-friday > span:first-child {
+  font-size: 26px;
+  line-height: 1;
+}
+.dishes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.dish {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  transition: background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
+}
+.dish.is-mine {
+  border-color: var(--outline);
+  background: var(--accent-soft);
+}
+.dish-body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.dish-name {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+a.dish-name {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+a.dish-name svg {
+  flex: none;
+  color: var(--accent-text);
+}
+a.dish-name:hover {
+  color: var(--accent-text);
+}
+.dish-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.dish-bar {
+  flex: 1;
+  max-width: 160px;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.dish-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 400ms var(--ease);
+}
+.dish-vote {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: var(--sticker-w) solid var(--outline);
+  border-radius: var(--r-pill);
+  background: var(--saffron);
+  color: var(--outline);
+  font-weight: 800;
+  box-shadow: 0 3px 0 var(--outline);
+  transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease), background var(--dur-2) var(--ease);
+}
+.dish-vote.on {
+  background: var(--yes);
+  color: var(--yes-ink);
+}
+.dish-vote:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--outline);
+}
+.dish-vote:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  transform: translateY(3px);
+}
+.vote-note {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .vote-pips i,
+  .dish-bar i {
+    transition: none;
+  }
+}

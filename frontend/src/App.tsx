@@ -9,16 +9,18 @@ import type { Me } from './types';
 import LunchesPage, { LunchesSkeleton } from './pages/Lunches';
 import SettingsPage from './pages/Settings';
 import AdminPage from './pages/Admin';
+import VotePage from './pages/Vote';
 
-type Tab = 'lunches' | 'settings' | 'admin';
+type Tab = 'lunches' | 'settings' | 'admin' | 'vote';
 
-const PATHS: Record<Tab, string> = { lunches: '/', settings: '/nastaveni', admin: '/admin' };
-const LABELS: Record<Tab, string> = { lunches: 'Obědy', settings: 'Nastavení', admin: 'Přehled' };
-const ICONS: Record<Tab, IconName> = { lunches: 'utensils', settings: 'sliders', admin: 'chart' };
+const PATHS: Record<Tab, string> = { lunches: '/', settings: '/nastaveni', admin: '/admin', vote: '/hlasuj' };
+const LABELS: Record<Tab, string> = { lunches: 'Obědy', settings: 'Nastavení', admin: 'Přehled', vote: 'Hlasuj!' };
+const ICONS: Record<Tab, IconName> = { lunches: 'utensils', settings: 'sliders', admin: 'chart', vote: 'sparkle' };
 
 function tabFromPath(path: string): Tab {
   if (path.startsWith('/nastaveni')) return 'settings';
   if (path.startsWith('/admin')) return 'admin';
+  if (path.startsWith('/hlasuj')) return 'vote';
   return 'lunches';
 }
 
@@ -58,6 +60,7 @@ export default function App() {
   // Text tabs; Nastavení lives as an icon button at the right edge of the top bar.
   const tabs: Tab[] = me?.isAdmin ? ['lunches', 'admin'] : ['lunches'];
   const active: Tab = tab === 'admin' && me && !me.isAdmin ? 'lunches' : tab;
+  const navActive: Tab = active === 'vote' ? 'lunches' : active;
   // A single-item bottom bar is pointless: non-admins navigate from the top bar only.
   const showTabbar = tabs.length > 1;
 
@@ -86,8 +89,8 @@ export default function App() {
               {tabs.map((t) => (
                 <button
                   key={t}
-                  className={t === active ? 'active' : ''}
-                  aria-current={t === active ? 'page' : undefined}
+                  className={t === navActive ? 'active' : ''}
+                  aria-current={t === navActive ? 'page' : undefined}
                   onClick={() => go(t)}
                 >
                   <Icon name={ICONS[t]} size={18} />
@@ -116,7 +119,8 @@ export default function App() {
           {!error && !me && <LunchesSkeleton />}
           {me && (
             <div className="view" key={active}>
-              {active === 'lunches' && <LunchesPage me={me} />}
+              {active === 'lunches' && <LunchesPage me={me} onVote={() => go('vote')} />}
+              {active === 'vote' && <VotePage me={me} onBack={() => go('lunches')} />}
               {active === 'settings' && <SettingsPage me={me} onMeChange={setMe} />}
               {active === 'admin' && <AdminPage />}
             </div>
@@ -129,12 +133,12 @@ export default function App() {
               {tabs.map((t) => (
                 <button
                   key={t}
-                  className={t === active ? 'active' : ''}
-                  aria-current={t === active ? 'page' : undefined}
+                  className={t === navActive ? 'active' : ''}
+                  aria-current={t === navActive ? 'page' : undefined}
                   onClick={() => go(t)}
                 >
                   <span className="tab-icon">
-                    <Icon name={ICONS[t]} size={22} strokeWidth={t === active ? 2.2 : 1.9} />
+                    <Icon name={ICONS[t]} size={22} strokeWidth={t === navActive ? 2.2 : 1.9} />
                   </span>
                   <span className="tab-label">{LABELS[t]}</span>
                 </button>

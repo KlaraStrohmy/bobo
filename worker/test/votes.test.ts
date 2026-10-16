@@ -1,0 +1,91 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { DISHES } from '../src/dishes';
+import { ADMIN, as, Clock, client, resetDb, type TestClient } from './helpers';
+
+const ALICE = as('alice@strohmy.cz');
+const BOB = as('bob@strohmy.cz');
+
+interface Payload {
+  week: string;
+  maxVotes: number;
+  myVotes: string[];
+  dishes: { id: string; name: string; url: string | null; votes: number | null }[];
+}
+
+let clock: Clock;
+let c: TestClient;
+
+beforeEach(async () => {
+  await resetDb();
+  clock = new Clock(); // Monday 2026-10-12, cooking Tue/Thu/Fri
+  c = client(clock);
+});
+
+const vote = (who: Record<string, string>, dish: string, voted: boolean) => c.put(`/api/votes/${dish}`, { voted }, who);
+const state = async (who: Record<string, string>) => (await (await c.get('/api/votes', who)).json()) as Payload;
+
+describe('votes', () => {
+  it('lists every dish for next week; links only where a url is known', async () => {
+    const s = await state(ALICE);
+    expect(s.week).toBe('2026-10-19');
+    expect(s.dishes).toHaveLength(DISHES.length);
+    const paprice = s.dishes.find((d) => d.id === 'kure-na-paprice');
+    expect(paprice?.url).toBe('https://www.rohlik.cz/chef/21-kure-na-paprice');
+    expect(s.dishes.find((d) => d.id === 'vepr-na-karamelu')?.url).toBeNull();
+  });
+
+  it('gives one vote per cooking day except Friday (Tue + Thu = 2)', async () => {
+    expect((await state(ALICE)).maxVotes).toBe(2);
+  });
+
+  it('hides the counts until the user has voted, then reveals them', async () => {
+    await vote(BOB, 'koprovka', true);
+    expect((await state(ALICE)).dishes.every((d) => d.votes === null)).toBe(true);
+    await vote(ALICE, 'rajska', true);
+    const s = await state(ALICE);
+    expect(s.myVotes).toEqual(['rajska']);
+    expect(s.dishes.find((d) => d.id === 'koprovka')?.votes).toBe(1);
+    expect(s.dishes.find((d) => d.id === 'rajska')?.votes).toBe(1);
+    expect(s.dishes.find((d) => d.id === 'arasidove-curry')?.votes).toBe(0);
+  });
+
+  it('refuses a vote over the limit but always allows removing one', async () => {
+    expect((await vote(ALICE, 'koprovka', true)).status).toBe(200);
+    expect((await vote(ALICE, 'rajska', true)).status).toBe(200);
+    expect((await vote(ALICE, 'arasidove-curry', true)).status).toBe(409);
+    expect((await state(ALICE)).myVotes).toEqual(['koprovka', 'rajska']);
+    expect((await vote(ALICE, 'koprovka', false)).status).toBe(200);
+    expect((await vote(ALICE, 'arasidove-curry', true)).status).toBe(200);
+  });
+
+  it('is idempotent: voting twice for the same dish counts once', async () => {
+    await vote(ALICE, 'koprovka', true);
+    await vote(ALICE, 'koprovka', true);
+    const s = await state(ALICE);
+    expect(s.myVotes).toEqual(['koprovka']);
+    expect(s.dishes.find((d) => d.id === 'koprovka')?.votes).toBe(1);
+  });
+
+  it('needs a signed-in user', async () => {
+    expect((await c.get('/api/votes')).status).toBe(401);
+    expect((await c.put('/api/votes/koprovka', { voted: true })).status).toBe(401);
+  });
+
+  it('rejects unknown dishes and malformed bodies', async () => {
+    expect((await vote(ALICE, 'nesmysl', true)).status).toBe(404);
+    expect((await c.put('/api/votes/koprovka', { voted: 'yes' }, ALICE)).status).toBe(422);
+  });
+
+  it('starts a clean slate every week', async () => {
+    await vote(ALICE, 'koprovka', true);
+    clock.now = new Date('2026-10-19T10:00:00+02:00'); // the voted week has begun, voting moves on
+    const s = await state(ALICE);
+    expect(s.week).toBe('2026-10-26');
+    expect(s.myVotes).toEqual([]);
+  });
+
+  it('counts Friday-only cooking as one vote at minimum', async () => {
+    await c.put('/api/admin/settings', { cookingWeekdays: [5], cutoff: { daysBefore: 1, time: '16:00' } }, as(ADMIN));
+    expect((await state(ALICE)).maxVotes).toBe(1);
+  });
+});

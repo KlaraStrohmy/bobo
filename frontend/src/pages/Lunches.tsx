@@ -50,7 +50,7 @@ function greeting(): string {
 
 const cap = (s: string) => s.charAt(0).toLocaleUpperCase('cs') + s.slice(1);
 
-export default function LunchesPage({ me }: { me: Me }) {
+export default function LunchesPage({ me, onVote }: { me: Me; onVote: () => void }) {
   const toast = useToast();
   const today = todayPrague();
   const thisMonday = mondayOf(today);
@@ -193,7 +193,7 @@ export default function LunchesPage({ me }: { me: Me }) {
       </section>
 
       <div className="vote-row">
-        <button type="button" className="vote-btn" onClick={() => toast('Hlasování o receptech připravujeme 🍜', 'ok')}>
+        <button type="button" className="vote-btn" onClick={onVote}>
           <img src="/ramen.png" alt="" width={72} height={79} />
           <span>Hlasuj!</span>
         </button>
