@@ -46,10 +46,10 @@
   --none: #d8cbbb;
 
   /* hero */
-  --hero-a: #c6461a;
-  --hero-b: #ad3815;
-  --hero-glow: rgba(255, 196, 92, 0.38);
-  --hero-shadow: 0 22px 40px -22px rgba(173, 56, 21, 0.7);
+  --hero-a: #2563c9;
+  --hero-b: #1b4aa3;
+  --hero-glow: rgba(125, 195, 255, 0.4);
+  --hero-shadow: 0 22px 40px -22px rgba(27, 74, 163, 0.7);
 
   --toast-bg: #2a201a;
   --toast-ink: #fbf3ea;
@@ -128,9 +128,9 @@
     --no-text: #f6a7b6;
     --none: #4d4138;
 
-    --hero-a: #8f3416;
-    --hero-b: #561f0d;
-    --hero-glow: rgba(242, 160, 60, 0.32);
+    --hero-a: #1f4f9e;
+    --hero-b: #112c5e;
+    --hero-glow: rgba(100, 170, 255, 0.28);
     --hero-shadow: 0 22px 40px -24px rgba(0, 0, 0, 0.9);
 
     --toast-bg: #3a3029;
@@ -260,7 +260,7 @@ button:disabled {
 .splash-logo img {
   display: block;
   border-radius: 26px;
-  box-shadow: 0 24px 40px -20px rgba(173, 56, 21, 0.7);
+  box-shadow: 0 24px 40px -20px rgba(27, 74, 163, 0.7);
   animation: float 2.6s var(--ease) infinite;
 }
 .splash-word {
