@@ -1,12 +1,12 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { Chicken } from './chicken';
 import { Icon, type IconName } from './icons';
 
 export type Answer = boolean | null;
 
 /**
- * Ano / Ne pill control. Tapping the selected option clears the answer (emits `null`),
- * so there is no separate "unset" button.
+ * Ano / Ne control: a big roast chicken on a track. Drag (or tap) it to the left for Ano,
+ * to the right for Ne, back to the middle to clear the answer. Arrow keys work too.
  */
 export function Segmented({
   value,
@@ -21,34 +21,110 @@ export function Segmented({
   size?: 'sm' | 'md';
   label?: string;
 }) {
-  const opts: { v: boolean; text: string; cls: string }[] = [
-    { v: true, text: 'Ano', cls: 'yes' },
-    { v: false, text: 'Ne', cls: 'no' },
-  ];
-  const state = value === true ? 'is-yes' : value === false ? 'is-no' : 'is-none';
+  const trackRef = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ id: number; x0: number; moved: boolean } | null>(null);
+  // live position while dragging: 0 = Ano (left), 1 = Ne (right)
+  const [dragPos, setDragPos] = useState<number | null>(null);
+
+  const restPos = value === true ? 0 : value === false ? 1 : 0.5;
+  const pos = dragPos ?? restPos;
+  const shown: Answer = dragPos === null ? value : answerAt(dragPos);
+  const state = shown === true ? 'is-yes' : shown === false ? 'is-no' : 'is-none';
+  const text = shown === true ? 'Ano' : shown === false ? 'Ne' : 'Bez odpovědi';
+
+  const commit = (v: Answer) => {
+    if (v !== value) onChange(v);
+  };
+
+  const posFromEvent = (clientX: number) => {
+    const el = trackRef.current;
+    if (!el) return restPos;
+    const r = el.getBoundingClientRect();
+    const bird = el.querySelector<HTMLElement>('.chk-bird')?.offsetWidth ?? 0;
+    const span = Math.max(1, r.width - bird);
+    return Math.min(1, Math.max(0, (clientX - r.left - bird / 2) / span));
+  };
+
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (disabled || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    drag.current = { id: e.pointerId, x0: e.clientX, moved: false };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    if (!d.moved && Math.abs(e.clientX - d.x0) < 6) return;
+    d.moved = true;
+    setDragPos(posFromEvent(e.clientX));
+  };
+  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    drag.current = null;
+    if (d.moved) {
+      commit(answerAt(posFromEvent(e.clientX)));
+    } else {
+      // a tap: left half = Ano, right half = Ne; tapping the current side clears it
+      const tapped = posFromEvent(e.clientX) < 0.5;
+      commit(value === tapped ? null : tapped);
+    }
+    setDragPos(null);
+  };
+  const onPointerCancel = () => {
+    drag.current = null;
+    setDragPos(null);
+  };
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    let v: Answer | undefined;
+    if (e.key === 'ArrowLeft') v = value === false ? null : true;
+    else if (e.key === 'ArrowRight') v = value === true ? null : false;
+    else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Escape') v = null;
+    if (v === undefined) return;
+    e.preventDefault();
+    commit(v);
+  };
+
   return (
-    <div className={`seg seg-${size} ${state}`} role="group" aria-label={label}>
-      <span className="seg-thumb" aria-hidden>
-        <Chicken className="seg-chicken" />
+    <div
+      ref={trackRef}
+      className={`chk chk-${size} ${state} ${dragPos !== null ? 'is-dragging' : ''} ${disabled ? 'is-disabled' : ''}`}
+      style={{ ['--pos' as string]: pos } as CSSProperties}
+      role="slider"
+      tabIndex={disabled ? -1 : 0}
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={2}
+      aria-valuenow={value === true ? 0 : value === false ? 2 : 1}
+      aria-valuetext={value === true ? 'Ano' : value === false ? 'Ne' : 'Bez odpovědi'}
+      aria-disabled={disabled || undefined}
+      title={disabled ? undefined : 'Kuře doleva = Ano, doprava = Ne'}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
+      onKeyDown={onKeyDown}
+    >
+      <span className="chk-end chk-end-yes" aria-hidden>
+        Ano
       </span>
-      {opts.map((o) => {
-        const on = value === o.v;
-        return (
-          <button
-            key={o.cls}
-            type="button"
-            aria-pressed={on}
-            title={on ? `${o.text} – klepnutím zrušíš` : o.text}
-            className={`seg-opt seg-${o.cls} ${on ? 'on' : ''}`}
-            disabled={disabled}
-            onClick={() => onChange(on ? null : o.v)}
-          >
-            <span>{o.text}</span>
-          </button>
-        );
-      })}
+      <span className="chk-end chk-end-no" aria-hidden>
+        Ne
+      </span>
+      <span className="chk-answer" aria-hidden>
+        {text}
+      </span>
+      <span className="chk-bird" aria-hidden>
+        <Chicken className="chk-chicken" />
+      </span>
     </div>
   );
+}
+
+function answerAt(pos: number): Answer {
+  if (pos < 0.34) return true;
+  if (pos > 0.66) return false;
+  return null;
 }
 
 /** iOS-style switch; the visible label is optional (pass `hideLabel` and it stays for screen readers). */

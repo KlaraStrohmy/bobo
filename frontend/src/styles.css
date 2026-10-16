@@ -3372,155 +3372,146 @@ h3 {
 }
 
 /* ==========================================================================
-   Ano / Ne switch: a roast chicken hops between the options instead of a pill
+   Ano / Ne: a big roast chicken dragged along a track (components.tsx Segmented).
+   Left = Ano, right = Ne, middle = no answer. The chicken may stick out of the track.
    ========================================================================== */
-.seg .seg-thumb,
-.seg.is-yes .seg-thumb,
-.seg.is-no .seg-thumb,
-.hero .seg .seg-thumb,
-.hero .seg.is-yes .seg-thumb,
-.hero .seg.is-no .seg-thumb {
+.chk {
+  --bw: 66px;
+  position: relative;
+  flex: none;
+  width: 172px;
+  height: 46px;
+  border-radius: var(--r-pill);
+  border: var(--sticker-w) solid var(--outline);
+  background: var(--surface-2);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  transition: background var(--dur-2) var(--ease);
+}
+.chk-sm {
+  --bw: 54px;
+  width: 144px;
+  height: 40px;
+}
+.chk.is-yes {
+  background: var(--yes-soft);
+}
+.chk.is-no {
+  background: var(--no-soft);
+}
+.chk:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.chk.is-dragging {
+  cursor: grabbing;
+}
+.chk.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.chk-end,
+.chk-answer {
+  position: absolute;
   top: 50%;
-  bottom: auto;
-  left: 7px;
-  width: 38px;
-  height: 31px;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
+  transform: translateY(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity var(--dur-2) var(--ease);
+}
+.chk-end {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--ink-3);
+  opacity: 0.7;
+}
+.chk-end-yes {
+  left: 12px;
+}
+.chk-end-no {
+  right: 12px;
+}
+.chk:not(.is-none) .chk-end {
   opacity: 0;
-  transform: translateY(-50%) scale(0.4) rotate(-20deg);
+}
+.chk-answer {
+  left: 8px;
+  right: 8px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0;
+}
+.chk-sm .chk-answer {
+  font-size: 15px;
+}
+.chk.is-yes .chk-answer {
+  left: calc(var(--bw) - 2px);
+  color: var(--yes-text);
+  opacity: 1;
+}
+.chk.is-no .chk-answer {
+  right: calc(var(--bw) - 2px);
+  color: var(--no-text);
+  opacity: 1;
+}
+.chk-bird {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: calc(var(--pos) * (100% - var(--bw)) - 4px);
+  width: calc(var(--bw) + 8px);
+  aspect-ratio: 68 / 62;
+  pointer-events: none;
+  transform: translateY(-56%) rotate(0deg);
   transition:
     left 420ms var(--ease-spring),
     transform 420ms var(--ease-spring),
-    opacity var(--dur-2) var(--ease),
     filter var(--dur-3) var(--ease);
 }
-.seg-chicken {
+.chk-chicken {
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
-.seg.is-yes .seg-thumb,
-.hero .seg.is-yes .seg-thumb {
-  opacity: 1;
-  transform: translateY(-52%) scale(1) rotate(-6deg);
+.chk.is-yes .chk-bird {
+  transform: translateY(-58%) rotate(-8deg);
 }
-.seg.is-no .seg-thumb,
-.hero .seg.is-no .seg-thumb {
-  left: calc(50% + 6px);
-  opacity: 1;
-  transform: translateY(-46%) scale(0.92) rotate(10deg);
-  filter: grayscale(0.75) brightness(1.08) opacity(0.85);
+.chk.is-no .chk-bird {
+  transform: translateY(-52%) rotate(9deg) scale(0.94);
+  filter: grayscale(0.75) brightness(1.08);
 }
-.seg-sm .seg-thumb,
-.seg-sm.is-yes .seg-thumb,
-.seg-sm.is-no .seg-thumb {
-  width: 32px;
-  height: 26px;
-  left: 6px;
-}
-.seg-sm.is-no .seg-thumb {
-  left: calc(50% + 5px);
-}
-/* the label makes room for the chicken; columns stay equal so nothing jumps */
-.seg-md .seg-opt {
-  min-width: 92px;
-}
-.seg-sm .seg-opt {
-  min-width: 74px;
-}
-.seg-opt {
+.chk.is-dragging .chk-bird {
   transition:
-    color var(--dur-2) var(--ease),
-    background var(--dur-2) var(--ease),
-    padding var(--dur-3) var(--ease-spring),
-    transform var(--dur-1) var(--ease);
+    transform var(--dur-1) var(--ease),
+    filter var(--dur-2) var(--ease);
 }
-.seg-md .seg-opt.on {
-  padding-left: 46px;
+.chk.is-dragging.is-none .chk-bird,
+.chk.is-dragging .chk-bird {
+  transform: translateY(-62%) rotate(-4deg) scale(1.08);
 }
-.seg-sm .seg-opt.on {
-  padding-left: 38px;
+.hero .chk {
+  background: rgba(255, 255, 255, 0.6);
 }
-.seg-opt.on {
-  animation: none;
-}
-.seg-yes.on,
-.hero .seg-yes.on {
-  color: var(--yes-text);
+.hero .chk.is-yes {
   background: var(--yes-soft);
 }
-.seg-no.on,
-.hero .seg-no.on {
-  color: var(--no-text);
+.hero .chk.is-no {
   background: var(--no-soft);
 }
+@media (max-width: 479px) {
+  .chk-md {
+    --bw: 60px;
+    width: 152px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .seg .seg-thumb {
-    transition: opacity var(--dur-2) var(--ease);
-  }
-}
-/* chicken rides above the tinted option */
-.seg .seg-thumb {
-  z-index: 2;
-  pointer-events: none;
-}
-.seg-md .seg-opt {
-  min-width: 84px;
-}
-.seg-md .seg-opt.on {
-  padding-left: 42px;
-}
-@media (max-width: 479px) {
-  .seg-md .seg-opt {
-    min-width: 70px;
-    padding: 0 9px;
-  }
-  .seg-md .seg-opt.on {
-    padding-left: 34px;
-  }
-  .seg-md .seg-thumb,
-  .seg-md.is-yes .seg-thumb,
-  .seg-md.is-no .seg-thumb,
-  .hero .seg-md .seg-thumb,
-  .hero .seg-md.is-yes .seg-thumb,
-  .hero .seg-md.is-no .seg-thumb {
-    width: 31px;
-    height: 26px;
-    left: 6px;
-  }
-  .seg-md.is-no .seg-thumb,
-  .hero .seg-md.is-no .seg-thumb {
-    left: calc(50% + 4px);
-  }
-}
-/* chicken viewBox is 68 x 62 */
-.seg .seg-thumb,
-.seg.is-yes .seg-thumb,
-.seg.is-no .seg-thumb,
-.hero .seg .seg-thumb,
-.hero .seg.is-yes .seg-thumb,
-.hero .seg.is-no .seg-thumb {
-  width: 38px;
-  height: 35px;
-}
-.seg-sm .seg-thumb,
-.seg-sm.is-yes .seg-thumb,
-.seg-sm.is-no .seg-thumb {
-  width: 32px;
-  height: 29px;
-}
-@media (max-width: 479px) {
-  .seg-md .seg-thumb,
-  .seg-md.is-yes .seg-thumb,
-  .seg-md.is-no .seg-thumb,
-  .hero .seg-md .seg-thumb,
-  .hero .seg-md.is-yes .seg-thumb,
-  .hero .seg-md.is-no .seg-thumb {
-    width: 32px;
-    height: 29px;
+  .chk-bird {
+    transition: filter var(--dur-2) var(--ease);
   }
 }
