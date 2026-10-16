@@ -17,7 +17,7 @@
       "binding": "DB",
       "database_name": "bobo",
       // Fill in after `npx wrangler d1 create bobo`.
-      "database_id": "efe16961-8818-48ff-b86b-6b257c0affb2",
+      "database_id": "66a4da9c-0f36-439f-8473-1d337b58db35",
       "migrations_dir": "migrations"
     }
   ],
@@ -27,7 +27,7 @@
     "ADMIN_EMAILS": "klara.matoulkova@strohmy.cz,pavel.vojacek@strohmy.cz",
     "VAPID_SUBJECT": "mailto:pavel.vojacek@strohmy.cz",
     // Public half of the VAPID pair (scripts/gen-vapid.mjs); set before deploying.
-    "VAPID_PUBLIC_KEY": "BCpj9t1_trnfcQiO3Rtb3B9KqzvPXc3l_ILMy2Hze6X3uj-bjMyc39R1FIliuazG2EJbN-G1I1c3A6FFnW1Dva4"
+    "VAPID_PUBLIC_KEY": "BIE6yVDBkrqb_Kyb3j-3Uee-sppelhRG5_do1ezkreqicEuBVqu07RDRivF9SBh5yXQ4UfxKqm9yWtM79sBLO08"
   }
   // Secrets (`wrangler secret put`): VAPID_PRIVATE_KEY, PUSH_TOKEN_SECRET.
   // Local dev: copy .dev.vars.example to .dev.vars.
