@@ -1,12 +1,12 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   InteractionRequiredAuthError,
-  InteractionType,
+  InteractionStatus,
   PublicClientApplication,
   type RedirectRequest,
 } from '@azure/msal-browser';
-import { MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
+import { MsalProvider, useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { registerSW } from 'virtual:pwa-register';
 import { enableDevMode, fetchConfig, setLogoutHandler, setTokenProvider } from './api';
 import { ConfigContext } from './config';
@@ -20,6 +20,22 @@ captureInstallEvents();
 registerSW({ immediate: true });
 
 const root = createRoot(document.getElementById('root')!);
+
+/**
+ * Signs in with a plain redirect (no hidden-iframe silent attempt first). The silent attempt
+ * times out when third-party cookies are blocked or the redirect URI is not registered, and
+ * then the user only saw "timed_out" instead of the Microsoft sign-in page.
+ */
+function AuthGate({ request, children }: { request: RedirectRequest; children: ReactNode }) {
+  const { instance, inProgress } = useMsal();
+  const authenticated = useIsAuthenticated();
+  useEffect(() => {
+    if (!authenticated && inProgress === InteractionStatus.None) {
+      instance.loginRedirect(request).catch(() => {});
+    }
+  }, [authenticated, inProgress, instance, request]);
+  return authenticated ? <>{children}</> : <Splash text="Přihlašuji…" />;
+}
 
 function Splash({ text, error }: { text: string; error?: boolean }) {
   return (
@@ -104,14 +120,9 @@ async function bootstrap(): Promise<void> {
     <StrictMode>
       <ConfigContext.Provider value={config}>
         <MsalProvider instance={pca}>
-          <MsalAuthenticationTemplate
-            interactionType={InteractionType.Redirect}
-            authenticationRequest={loginRequest}
-            loadingComponent={() => <Splash text="Přihlašuji…" />}
-            errorComponent={({ error }) => <Splash error text={`Přihlášení selhalo: ${error?.message ?? ''}`} />}
-          >
+          <AuthGate request={loginRequest}>
             <App />
-          </MsalAuthenticationTemplate>
+          </AuthGate>
         </MsalProvider>
       </ConfigContext.Provider>
     </StrictMode>,
