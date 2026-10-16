@@ -272,17 +272,13 @@ function Hero({
       <p className="hero-greet">{greet}</p>
       <h1 className="hero-title">
         {headline}
+        {next && <span className="hero-food"> {MENU_PLACEHOLDER}</span>}
         {next && (
           <span className="hero-date">
             {weekdayLong(next.date)} {formatDayMonth(next.date)}
           </span>
         )}
       </h1>
-      {next && (
-        <p className="hero-menu">
-          <span>Vaří se:</span> {MENU_PLACEHOLDER}
-        </p>
-      )}
       {next ? (
         <div className="hero-row">
           <HeroStatus day={next} today={today} />

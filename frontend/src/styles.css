@@ -3538,3 +3538,19 @@ h3 {
 .day-cancelled .day-food {
   display: none;
 }
+/* what is cooking, right next to "Dnes se vaří" */
+.hero-food {
+  font-size: 0.72em;
+  font-weight: 800;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+/* no room beside the title (head + animals), so the food sits directly under it, above the date */
+.hero-food {
+  display: block;
+  max-width: 172px;
+  margin-top: 4px;
+  font-size: 21px;
+  line-height: 1.15;
+  color: var(--ink);
+}
