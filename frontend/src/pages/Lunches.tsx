@@ -21,6 +21,8 @@ import { useToast } from '../toast';
 import type { Day, Me } from '../types';
 
 const WEEKS = 5;
+/** What is cooking; the backend has no menu yet, so this is a placeholder. */
+const MENU_PLACEHOLDER = '…';
 
 interface Week {
   monday: string;
@@ -276,6 +278,11 @@ function Hero({
           </span>
         )}
       </h1>
+      {next && (
+        <p className="hero-menu">
+          <span>Vaří se:</span> {MENU_PLACEHOLDER}
+        </p>
+      )}
       {next ? (
         <div className="hero-row">
           <HeroStatus day={next} today={today} />
@@ -375,6 +382,7 @@ function DayCard({
             </span>
           )}
         </div>
+        {d.cooking && <div className="day-food">{MENU_PLACEHOLDER}</div>}
         {!d.cooking ? (
           <div className="day-meta">{d.note ? d.note : 'Tento den se nevaří'}</div>
         ) : d.locked ? (
