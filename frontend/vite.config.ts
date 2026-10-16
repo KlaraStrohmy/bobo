@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Matches the light-theme background (--bg) so the installed app's chrome blends in.
-const THEME_COLOR = '#fbf6ee';
+const THEME_COLOR = '#fff7e8';
 
 export default defineConfig({
   plugins: [
@@ -27,7 +27,7 @@ export default defineConfig({
         start_url: '/',
         scope: '/',
         display: 'standalone',
-        background_color: '#fbf6ee',
+        background_color: '#fff7e8',
         theme_color: THEME_COLOR,
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

@@ -1,73 +1,78 @@
 /* ==========================================================================
    Bobo — design tokens
-   Warm canteen palette: cream base, tomato accent, saffron highlight,
-   deep warm ink; green = Ano, muted rose = Ne.
+   Playful sticker style: sunny cream base, yellow hero, purple accent,
+   mint = Ano, coral = Ne, deep violet ink with chunky outlines.
    ========================================================================== */
 :root {
   color-scheme: light dark;
 
-  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+  --font-ui: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif;
 
   /* surfaces */
-  --bg: #fbf6ee;
-  --bg-glow: #f8e7d4;
+  --bg: #fff7e8;
+  --bg-glow: #ffeebf;
   --surface: #ffffff;
-  --surface-2: #f5eee4;
-  --surface-3: #e9dfd2;
-  --line: #ece2d5;
-  --line-strong: #d9cbb9;
-  --stripe: rgba(120, 90, 60, 0.06);
+  --surface-2: #fff1d3;
+  --surface-3: #f6dfae;
+  --line: #efdcae;
+  --line-strong: #dcc283;
+  --stripe: rgba(107, 63, 212, 0.06);
+  --dots: rgba(107, 63, 212, 0.1);
 
   /* text */
-  --ink: #241b15;
-  --ink-2: #5a4d44;
-  --ink-3: #75685d;
+  --ink: #2b1f3f;
+  --ink-2: #4d3f66;
+  --ink-3: #6b5e82;
 
   /* brand */
-  --accent: #c8441b;
-  --accent-hover: #b03a15;
+  --accent: #6b3fd4;
+  --accent-hover: #5a31bd;
   --accent-ink: #ffffff;
-  --accent-soft: #fbe4d8;
-  --accent-text: #a8391a;
-  --saffron: #e9a23b;
-  --saffron-soft: #fcefd5;
-  --saffron-text: #82540c;
+  --accent-soft: #ece4fb;
+  --accent-text: #5a31bd;
+  --saffron: #ffd84f;
+  --saffron-soft: #fff1b8;
+  --saffron-text: #7a5600;
 
   /* answers */
-  --yes: #2e7d4f;
-  --yes-ink: #ffffff;
-  --yes-soft: #e2f1e6;
-  --yes-text: #1e6239;
-  --no: #b5475c;
-  --no-ink: #ffffff;
-  --no-soft: #f8e4e7;
-  --no-text: #962f45;
-  --none: #d8cbbb;
+  --yes: #3ccb9c;
+  --yes-ink: #0d3b2e;
+  --yes-soft: #d9f7ec;
+  --yes-text: #12775a;
+  --no: #ff7d66;
+  --no-ink: #4a1208;
+  --no-soft: #ffe3dd;
+  --no-text: #b73a25;
+  --none: #e6d4a6;
 
   /* hero */
-  --hero-a: #2563c9;
-  --hero-b: #1b4aa3;
-  --hero-glow: rgba(125, 195, 255, 0.4);
-  --hero-shadow: 0 22px 40px -22px rgba(27, 74, 163, 0.7);
+  --hero-a: #ffd84f;
+  --hero-b: #ffb52e;
+  --hero-glow: rgba(255, 255, 255, 0.5);
+  --hero-shadow: 0 8px 0 #e39a14;
 
-  --toast-bg: #2a201a;
-  --toast-ink: #fbf3ea;
+  --toast-bg: #2b1f3f;
+  --toast-ink: #fff7e8;
 
-  --focus: #c8441b;
+  --focus: #6b3fd4;
+
+  /* sticker outline + hard shadow */
+  --outline: #2b1f3f;
+  --sticker-w: 2.5px;
 
   /* shape */
-  --r-xs: 8px;
-  --r-sm: 12px;
-  --r-md: 16px;
-  --r-lg: 22px;
-  --r-xl: 28px;
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 30px;
   --r-pill: 999px;
 
-  /* elevation (warm-tinted) */
-  --shadow-sm: 0 1px 2px rgba(70, 40, 15, 0.06), 0 1px 1px rgba(70, 40, 15, 0.03);
-  --shadow-md: 0 8px 22px -10px rgba(80, 40, 10, 0.22), 0 2px 6px rgba(80, 40, 10, 0.05);
-  --shadow-lg: 0 22px 44px -18px rgba(80, 40, 10, 0.32), 0 4px 10px rgba(80, 40, 10, 0.06);
+  /* elevation (violet-tinted, soft + chunky) */
+  --shadow-sm: 0 3px 0 rgba(107, 63, 212, 0.12);
+  --shadow-md: 0 5px 0 rgba(107, 63, 212, 0.16);
+  --shadow-lg: 0 10px 0 -2px rgba(43, 31, 63, 0.18), 0 18px 30px -16px rgba(43, 31, 63, 0.35);
 
   /* spacing */
   --s-1: 4px;
@@ -96,51 +101,54 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14100d;
-    --bg-glow: #2a1a10;
-    --surface: #1e1814;
-    --surface-2: #29221c;
-    --surface-3: #3a3029;
-    --line: #2e2620;
-    --line-strong: #463a31;
-    --stripe: rgba(255, 220, 190, 0.04);
+    --bg: #1b1531;
+    --bg-glow: #2e2252;
+    --surface: #2a2145;
+    --surface-2: #362b58;
+    --surface-3: #463a6e;
+    --line: #3f3566;
+    --line-strong: #5b4d8f;
+    --stripe: rgba(220, 205, 255, 0.05);
+    --dots: rgba(220, 205, 255, 0.07);
 
-    --ink: #f7efe6;
-    --ink-2: #d2c4b6;
-    --ink-3: #a8998a;
+    --ink: #f7f2ff;
+    --ink-2: #d5caef;
+    --ink-3: #aa9fcb;
 
-    --accent: #f27a4b;
-    --accent-hover: #ff8d60;
-    --accent-ink: #1d0f08;
-    --accent-soft: rgba(242, 122, 75, 0.16);
-    --accent-text: #ff9e78;
-    --saffron: #f2b24c;
-    --saffron-soft: rgba(242, 178, 76, 0.14);
-    --saffron-text: #f6c66f;
+    --accent: #b49cff;
+    --accent-hover: #c5b3ff;
+    --accent-ink: #1d1236;
+    --accent-soft: rgba(180, 156, 255, 0.2);
+    --accent-text: #cdbcff;
+    --saffron: #ffd84f;
+    --saffron-soft: rgba(255, 216, 79, 0.15);
+    --saffron-text: #ffe27d;
 
-    --yes: #5cc98a;
-    --yes-ink: #0b1f13;
-    --yes-soft: rgba(92, 201, 138, 0.14);
-    --yes-text: #86dca9;
-    --no: #f0879b;
-    --no-ink: #2a0b12;
-    --no-soft: rgba(240, 135, 155, 0.14);
-    --no-text: #f6a7b6;
-    --none: #4d4138;
+    --yes: #3ccb9c;
+    --yes-ink: #06251c;
+    --yes-soft: rgba(60, 203, 156, 0.16);
+    --yes-text: #7fe6c4;
+    --no: #ff7d66;
+    --no-ink: #2f0a03;
+    --no-soft: rgba(255, 125, 102, 0.16);
+    --no-text: #ffa491;
+    --none: #4d4170;
 
-    --hero-a: #1f4f9e;
-    --hero-b: #112c5e;
-    --hero-glow: rgba(100, 170, 255, 0.28);
-    --hero-shadow: 0 22px 40px -24px rgba(0, 0, 0, 0.9);
+    --hero-a: #ffd84f;
+    --hero-b: #f2a826;
+    --hero-glow: rgba(255, 255, 255, 0.35);
+    --hero-shadow: 0 8px 0 #b97a0c;
 
-    --toast-bg: #3a3029;
-    --toast-ink: #fbf3ea;
+    --toast-bg: #463a6e;
+    --toast-ink: #fff7e8;
 
-    --focus: #ff9e78;
+    --focus: #cdbcff;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-    --shadow-md: 0 10px 24px -12px rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 24px 48px -18px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.03);
+    --outline: #14102a;
+
+    --shadow-sm: 0 3px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 5px 0 rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 10px 0 -2px rgba(0, 0, 0, 0.4), 0 18px 30px -16px rgba(0, 0, 0, 0.7);
   }
 }
 
@@ -337,7 +345,7 @@ button:disabled {
 .brand-mark {
   display: block;
   border-radius: 10px;
-  box-shadow: 0 6px 12px -6px rgba(173, 56, 21, 0.6);
+  box-shadow: 0 6px 12px -6px rgba(43, 31, 63, 0.35);
 }
 .brand-name {
   font-family: var(--font-display);
@@ -1814,7 +1822,7 @@ input.narrow {
 .install-head img {
   flex: none;
   border-radius: 12px;
-  box-shadow: 0 8px 16px -8px rgba(173, 56, 21, 0.6);
+  box-shadow: 0 8px 16px -8px rgba(43, 31, 63, 0.35);
 }
 .install-head h2 {
   margin: 0;
@@ -1946,7 +1954,7 @@ input.narrow {
 .install-banner-row img {
   flex: none;
   border-radius: 10px;
-  box-shadow: 0 6px 12px -6px rgba(173, 56, 21, 0.6);
+  box-shadow: 0 6px 12px -6px rgba(43, 31, 63, 0.35);
 }
 .install-banner-text {
   flex: 1;
@@ -2896,4 +2904,326 @@ input.narrow {
 }
 .btn-signout:hover:not(:disabled) {
   background: var(--no-soft);
+}
+
+/* ==========================================================================
+   Playful sticker layer (variant 3)
+   Chunky dark outlines, hard offset shadows, dotted paper, mascot hero.
+   Kept last so it only overrides what the base rules above define.
+   ========================================================================== */
+body {
+  background:
+    radial-gradient(var(--dots) 1.5px, transparent 1.9px) 0 0 / 20px 20px,
+    radial-gradient(120% 60% at 50% -10%, var(--bg-glow), transparent 60%) no-repeat,
+    var(--bg);
+  font-weight: 600;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.005em;
+}
+
+/* top bar + brand */
+.topbar {
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, var(--line) 80%, transparent);
+}
+.brand-mark {
+  border-radius: 11px;
+  box-shadow: 0 3px 0 var(--outline);
+}
+.brand-name {
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+  line-height: 0.9;
+}
+.brand-tag {
+  background: var(--saffron);
+  color: var(--outline);
+  border: 2px solid var(--outline);
+  padding: 1px 8px;
+}
+.badge-dev {
+  background: var(--saffron-soft);
+}
+.avatar {
+  border: 2.5px solid var(--outline);
+  box-shadow: 0 2px 0 var(--outline);
+}
+
+/* cards, rows, banners */
+.card,
+.day,
+.date-chip,
+.chip,
+.install-banner {
+  border-width: 2px;
+}
+.card,
+.day {
+  box-shadow: var(--shadow-md);
+}
+
+/* day tiles: little tilted stickers */
+.day-tile {
+  border: var(--sticker-w) solid var(--outline);
+  border-radius: 16px;
+  box-shadow: 0 3px 0 var(--outline);
+  transform: rotate(-3deg);
+  background: var(--surface-2);
+}
+.day:nth-child(even) .day-tile {
+  transform: rotate(3deg);
+}
+.day-none .day-tile {
+  background: var(--surface-2);
+  box-shadow: 0 3px 0 var(--outline);
+}
+.day-yes .day-tile {
+  background: var(--yes);
+  color: var(--yes-ink);
+}
+.day-no .day-tile {
+  background: var(--no);
+  color: var(--no-ink);
+}
+.day-num {
+  letter-spacing: 0;
+}
+
+/* Ano / Ne switch */
+.seg {
+  background: var(--surface-2);
+  border: var(--sticker-w) solid var(--outline);
+}
+.seg-thumb {
+  border: var(--sticker-w) solid var(--outline);
+  box-shadow: 0 3px 0 var(--outline);
+}
+.seg.is-yes .seg-thumb,
+.seg.is-no .seg-thumb {
+  box-shadow: 0 3px 0 var(--outline);
+}
+.seg-opt {
+  font-weight: 800;
+}
+
+/* quick chips */
+.chip {
+  border-color: var(--line-strong);
+  box-shadow: 0 3px 0 var(--line-strong);
+  font-weight: 700;
+}
+.chip-dot {
+  border: 2px solid var(--outline);
+}
+.chip-yes .chip-dot {
+  background: var(--yes);
+  color: var(--yes-ink);
+}
+.chip-no .chip-dot {
+  background: var(--no);
+  color: var(--no-ink);
+}
+.chip-month .chip-dot {
+  background: var(--saffron);
+  color: var(--outline);
+}
+
+/* tab bar: purple sticker for the active tab */
+.tabbar-inner {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 2px solid var(--line-strong);
+  border-radius: 28px;
+}
+.tabbar button {
+  font-weight: 800;
+  border: var(--sticker-w) solid transparent;
+}
+.tabbar button.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--outline);
+  box-shadow: 0 3px 0 var(--outline);
+}
+
+/* primary buttons + date strip */
+.btn-primary {
+  border: var(--sticker-w) solid var(--outline);
+  box-shadow: 0 3px 0 var(--outline);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--outline);
+}
+.date-chip.on {
+  border: var(--sticker-w) solid var(--outline);
+  box-shadow: 0 3px 0 var(--outline);
+}
+.week-count {
+  border: 2px solid var(--outline);
+}
+.week-count.is-done {
+  background: var(--yes);
+  color: var(--yes-ink);
+}
+
+/* overview tiles */
+.tile {
+  border: var(--sticker-w) solid var(--outline);
+  box-shadow: 0 3px 0 var(--outline);
+}
+.tile-yes {
+  background: var(--yes-soft);
+}
+.tile-no {
+  background: var(--no-soft);
+}
+.tile-none {
+  background: var(--saffron-soft);
+}
+.tile-icon {
+  border: 2px solid var(--outline);
+}
+
+/* hero: yellow sticker card with Bobo in his bowl */
+.hero {
+  border: var(--sticker-w) solid var(--outline);
+  color: var(--ink);
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.4) 1.6px, transparent 2px) 0 0 / 16px 16px,
+    radial-gradient(110% 90% at 105% -10%, var(--hero-glow), transparent 55%),
+    linear-gradient(160deg, var(--hero-a) 0%, var(--hero-b) 100%);
+  --ink: #2b1f3f;
+  --ink-2: #4d3f66;
+}
+.hero::before,
+.hero::after {
+  position: absolute;
+  z-index: -1;
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+}
+.hero::before {
+  content: '🍝';
+  right: 96px;
+  top: 12px;
+  font-size: 18px;
+  transform: rotate(14deg);
+}
+.hero::after {
+  content: '🥗';
+  right: 22px;
+  bottom: 74px;
+  font-size: 30px;
+  transform: rotate(-6deg);
+}
+.hero-skeleton::before,
+.hero-skeleton::after {
+  content: none;
+}
+.hero-art {
+  z-index: 0;
+  right: 14px;
+  top: 14px;
+  width: 128px;
+  height: auto;
+  fill: none;
+  stroke: none;
+  pointer-events: none;
+}
+.hero-art * {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hero-greet {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
+  font-weight: 800;
+}
+.hero-title {
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.hero-date {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+.hero-status {
+  font-weight: 700;
+  color: var(--ink);
+}
+.status-dot {
+  border: 2.5px solid var(--outline);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.status-dot.is-yes {
+  background: var(--yes);
+  color: var(--yes-ink);
+}
+.status-dot.is-no {
+  background: var(--no);
+  color: var(--no-ink);
+}
+.hero .seg {
+  background: rgba(255, 255, 255, 0.6);
+}
+.hero .seg-opt {
+  color: var(--ink);
+}
+.hero .seg-opt:not(.on):not(:disabled):hover {
+  background: rgba(43, 31, 63, 0.07);
+  color: var(--ink);
+}
+.hero .seg.is-yes .seg-thumb {
+  background: var(--yes);
+  box-shadow: 0 3px 0 var(--outline);
+}
+.hero .seg.is-no .seg-thumb {
+  background: var(--no);
+  box-shadow: 0 3px 0 var(--outline);
+}
+.hero .seg-yes.on {
+  color: var(--yes-ink);
+}
+.hero .seg-no.on {
+  color: var(--no-ink);
+}
+.hero-progress {
+  border-top: 2.5px dashed rgba(43, 31, 63, 0.3);
+}
+.progress {
+  height: 12px;
+  border: 2.5px solid var(--outline);
+  background: rgba(255, 255, 255, 0.7);
+}
+.progress span {
+  background: repeating-linear-gradient(135deg, var(--accent) 0 8px, color-mix(in srgb, var(--accent) 80%, #fff) 8px 16px);
+}
+.progress-text,
+.progress-text b {
+  color: var(--ink);
+}
+.progress-text {
+  font-weight: 700;
+}
+.hero-skeleton {
+  background: var(--surface);
+  border: 2px solid var(--line);
 }
