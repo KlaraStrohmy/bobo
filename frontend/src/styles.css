@@ -3675,3 +3675,8 @@ h3 {
     font-size: 19px;
   }
 }
+/* dark sticker outline around the whole ramen picture (the inner lines are baked into the image) */
+.vote-btn img {
+  filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 2px 0 var(--outline))
+    drop-shadow(0 -2px 0 var(--outline)) drop-shadow(0 5px 0 rgba(43, 31, 63, 0.25));
+}
