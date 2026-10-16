@@ -3281,3 +3281,24 @@ h3 {
 .hero::before {
   right: 124px;
 }
+/* pig and cow peek out from behind the head */
+.hero::before,
+.hero::after {
+  z-index: -1;
+}
+.hero::before {
+  right: 128px;
+  top: 8px;
+  width: 104px;
+  height: 84px;
+}
+.hero::after {
+  right: -16px;
+  top: 22px;
+  width: 118px;
+  height: 90px;
+}
+.hero::before {
+  right: 116px;
+  top: 0;
+}
