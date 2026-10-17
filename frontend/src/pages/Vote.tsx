@@ -133,8 +133,13 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
                 title={mine ? 'Vzít hlas zpět' : left <= 0 ? 'Hlasy ti došly' : 'Dát hlas'}
                 onClick={() => void toggle(id, !mine)}
               >
-                <Icon name={mine ? 'check' : 'sparkle'} size={16} strokeWidth={2.6} />
-                {mine ? 'Můj hlas' : 'Chci'}
+                <img className="dish-dog" src="/dog.png" alt="" width={46} height={70} />
+                <span className="sr-only">{mine ? 'Můj hlas' : 'Chci'}</span>
+                {mine && (
+                  <span className="dish-tick" aria-hidden>
+                    <Icon name="check" size={13} strokeWidth={3.2} />
+                  </span>
+                )}
               </button>
             </li>
           );
