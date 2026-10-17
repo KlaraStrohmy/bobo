@@ -3837,34 +3837,6 @@ a.dish-name:hover {
   background: var(--accent);
   transition: width 400ms var(--ease);
 }
-.dish-vote {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 16px;
-  border: var(--sticker-w) solid var(--outline);
-  border-radius: var(--r-pill);
-  background: var(--saffron);
-  color: var(--outline);
-  font-weight: 800;
-  box-shadow: 0 3px 0 var(--outline);
-  transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease), background var(--dur-2) var(--ease);
-}
-.dish-vote.on {
-  background: var(--yes);
-  color: var(--yes-ink);
-}
-.dish-vote:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--outline);
-}
-.dish-vote:disabled {
-  opacity: 0.45;
-  box-shadow: none;
-  transform: translateY(3px);
-}
 .vote-note {
   margin: 4px 0 0;
   text-align: center;
@@ -3878,51 +3850,97 @@ a.dish-name:hover {
   }
 }
 
-/* the vote button is the dog's head instead of a "Chci" label */
-.dish-vote {
+
+/* Hlasuj!: drag the dog's head sideways to vote (same idea as the chicken in Ano / Ne) */
+.dish {
+  padding-top: 34px;
+  align-items: flex-end;
+}
+.dish-body {
+  align-self: center;
+}
+.vsl {
+  --hw: 62px;
   position: relative;
-  justify-content: center;
-  min-width: 68px;
-  min-height: 56px;
-  padding: 0 12px;
-  overflow: visible;
-}
-.dish-dog {
-  display: block;
-  width: 34px;
-  height: auto;
-  margin-top: -14px; /* the ears stick out above the button */
-  filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff)
-    drop-shadow(0 2px 0 rgba(43, 31, 63, 0.35));
-  transition: transform 220ms var(--ease-spring);
-}
-.dish-vote:hover:not(:disabled) .dish-dog {
-  transform: rotate(-8deg) scale(1.08);
-}
-.dish-vote.on .dish-dog {
-  transform: scale(1.1);
-}
-.dish-vote:disabled .dish-dog {
-  filter: grayscale(0.8) drop-shadow(0 0 0 #fff);
-}
-.dish-tick {
-  position: absolute;
-  top: -8px;
-  right: -6px;
-  width: 22px;
-  height: 22px;
-  display: grid;
-  place-items: center;
+  flex: none;
+  width: 156px;
+  height: 46px;
   border: var(--sticker-w) solid var(--outline);
-  border-radius: 50%;
-  background: var(--surface);
+  border-radius: var(--r-pill);
+  background: var(--saffron-soft);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  transition: background var(--dur-2) var(--ease);
+}
+.vsl.is-on {
+  background: var(--yes-soft);
+}
+.vsl.is-dragging {
+  cursor: grabbing;
+}
+.vsl:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.vsl.is-disabled {
+  cursor: progress;
+}
+.vsl.is-locked:not(.is-dragging) {
+  background: var(--surface-2);
+}
+.vsl.is-locked:not(.is-dragging) .vsl-head img {
+  filter: saturate(0.55) brightness(0.92) drop-shadow(0 0 0 #fff);
+}
+.vsl-hint {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  pointer-events: none;
+  transition: opacity var(--dur-2) var(--ease);
+}
+.vsl-hint-off {
+  right: 10px;
+  color: var(--ink-3);
+  opacity: 0.8;
+}
+.vsl-hint-on {
+  left: 12px;
   color: var(--yes-text);
+  opacity: 0;
 }
-.dish-vote {
-  min-width: 78px;
-  min-height: 60px;
+.vsl.is-on .vsl-hint-off {
+  opacity: 0;
 }
-.dish-dog {
-  width: 46px;
-  margin-top: -20px;
+.vsl.is-on .vsl-hint-on {
+  opacity: 1;
+}
+.vsl-head {
+  position: absolute;
+  z-index: 1;
+  bottom: -4px;
+  left: calc(var(--pos) * (100% - var(--hw)));
+  width: var(--hw);
+  pointer-events: none;
+  transition:
+    left 380ms var(--ease-spring),
+    transform 380ms var(--ease-spring);
+}
+.vsl.is-dragging .vsl-head {
+  transition: transform var(--dur-1) var(--ease);
+  transform: translateY(-3px) rotate(4deg) scale(1.06);
+}
+.vsl-head img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff)
+    drop-shadow(0 3px 0 rgba(43, 31, 63, 0.4));
+}
+@media (prefers-reduced-motion: reduce) {
+  .vsl-head {
+    transition: none;
+  }
 }

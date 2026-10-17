@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
 import { api, ApiError, errorMessage } from '../api';
 import { ErrorState } from '../components';
 import { formatDayMonth } from '../dates';
@@ -21,6 +21,107 @@ function shuffled<T>(items: T[], seed: string): T[] {
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
+}
+
+/**
+ * Drag the dog's head to the right to give a vote, back to the left to take it back.
+ * A tap on the track toggles too, and the arrow keys work.
+ */
+function DogSlider({
+  on,
+  locked,
+  disabled,
+  label,
+  onChange,
+  onBlocked,
+}: {
+  on: boolean;
+  /** No votes left: turning on is refused. */
+  locked: boolean;
+  disabled: boolean;
+  label: string;
+  onChange: (v: boolean) => void;
+  onBlocked: () => void;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ id: number; x0: number; moved: boolean } | null>(null);
+  const [dragPos, setDragPos] = useState<number | null>(null);
+  const pos = dragPos ?? (on ? 1 : 0);
+  const shownOn = dragPos === null ? on : dragPos > 0.5;
+
+  const posFrom = (clientX: number) => {
+    const el = trackRef.current;
+    if (!el) return on ? 1 : 0;
+    const r = el.getBoundingClientRect();
+    const head = el.querySelector<HTMLElement>('.vsl-head')?.offsetWidth ?? 0;
+    return Math.min(1, Math.max(0, (clientX - r.left - head / 2) / Math.max(1, r.width - head)));
+  };
+  const decide = (want: boolean) => {
+    if (want === on) return;
+    if (want && locked) onBlocked();
+    else onChange(want);
+  };
+
+  const down = (e: PointerEvent<HTMLDivElement>) => {
+    if (disabled || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    drag.current = { id: e.pointerId, x0: e.clientX, moved: false };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const move = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    if (!d.moved && Math.abs(e.clientX - d.x0) < 6) return;
+    d.moved = true;
+    setDragPos(posFrom(e.clientX));
+  };
+  const up = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    drag.current = null;
+    decide(d.moved ? posFrom(e.clientX) > 0.5 : !on);
+    setDragPos(null);
+  };
+  const key = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    if (e.key === 'ArrowRight') decide(true);
+    else if (e.key === 'ArrowLeft') decide(false);
+    else if (e.key === 'Enter' || e.key === ' ') decide(!on);
+    else return;
+    e.preventDefault();
+  };
+
+  return (
+    <div
+      ref={trackRef}
+      className={`vsl ${shownOn ? 'is-on' : ''} ${dragPos !== null ? 'is-dragging' : ''} ${disabled ? 'is-disabled' : ''} ${locked && !on ? 'is-locked' : ''}`}
+      style={{ ['--pos' as string]: pos } as CSSProperties}
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      aria-disabled={disabled || undefined}
+      tabIndex={disabled ? -1 : 0}
+      title={on ? 'Táhni doleva a vezmi hlas zpět' : locked ? 'Hlasy ti došly' : 'Táhni psa doprava a dej hlas'}
+      onPointerDown={down}
+      onPointerMove={move}
+      onPointerUp={up}
+      onPointerCancel={() => {
+        drag.current = null;
+        setDragPos(null);
+      }}
+      onKeyDown={key}
+    >
+      <span className="vsl-hint vsl-hint-off" aria-hidden>
+        <Icon name="chevronRight" size={16} strokeWidth={3} />
+        <Icon name="chevronRight" size={16} strokeWidth={3} />
+      </span>
+      <span className="vsl-hint vsl-hint-on" aria-hidden>
+        <Icon name="check" size={18} strokeWidth={3.2} />
+      </span>
+      <span className="vsl-head" aria-hidden>
+        <img src="/dog.png" alt="" width={90} height={131} draggable={false} />
+      </span>
+    </div>
+  );
 }
 
 export default function VotePage({ me, onBack }: { me: Me; onBack: () => void }) {
@@ -103,7 +204,6 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
         {order.map((id) => {
           const d = byId.get(id)!;
           const mine = data.myVotes.includes(id);
-          const disabled = busy !== null || (!mine && left <= 0);
           const share = d.votes !== null && top > 0 ? Math.round((d.votes / top) * 100) : 0;
           return (
             <li key={id} className={`dish ${mine ? 'is-mine' : ''}`}>
@@ -125,22 +225,14 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
                   </span>
                 )}
               </div>
-              <button
-                type="button"
-                className={`dish-vote ${mine ? 'on' : ''}`}
-                aria-pressed={mine}
-                disabled={disabled}
-                title={mine ? 'Vzít hlas zpět' : left <= 0 ? 'Hlasy ti došly' : 'Dát hlas'}
-                onClick={() => void toggle(id, !mine)}
-              >
-                <img className="dish-dog" src="/dog.png" alt="" width={46} height={70} />
-                <span className="sr-only">{mine ? 'Můj hlas' : 'Chci'}</span>
-                {mine && (
-                  <span className="dish-tick" aria-hidden>
-                    <Icon name="check" size={13} strokeWidth={3.2} />
-                  </span>
-                )}
-              </button>
+              <DogSlider
+                on={mine}
+                locked={left <= 0}
+                disabled={busy !== null}
+                label={`Hlas pro ${d.name}`}
+                onChange={(voted) => void toggle(id, voted)}
+                onBlocked={() => toast('Hlasy ti došly, nejdřív jeden vrať.', 'error')}
+              />
             </li>
           );
         })}
