@@ -6,6 +6,7 @@ import {
   endOfMonth,
   formatCutoff,
   formatDayMonth,
+  isoWeekday,
   isoWeekNumber,
   mondayOf,
   todayPrague,
@@ -23,6 +24,12 @@ import type { Day, Me } from '../types';
 const WEEKS = 5;
 /** What is cooking; the backend has no menu yet, so this is a placeholder. */
 const MENU_PLACEHOLDER = '…';
+const FRIDAY = 5;
+
+/** What is cooking on a day: every Friday is burrito, the other days are not decided yet. */
+function dishFor(date: string): string {
+  return isoWeekday(date) === FRIDAY ? 'Burrito 🌯' : MENU_PLACEHOLDER;
+}
 
 interface Week {
   monday: string;
@@ -282,7 +289,7 @@ function Hero({
       <p className="hero-greet">{greet}</p>
       <h1 className="hero-title">
         {headline}
-        {next && <span className="hero-food"> {MENU_PLACEHOLDER}</span>}
+        {next && <span className="hero-food"> {dishFor(next.date)}</span>}
         {next && (
           <span className="hero-date">
             {weekdayLong(next.date)} {formatDayMonth(next.date)}
@@ -388,7 +395,7 @@ function DayCard({
             </span>
           )}
         </div>
-        {d.cooking && <div className="day-food">{MENU_PLACEHOLDER}</div>}
+        {d.cooking && <div className="day-food">{dishFor(d.date)}</div>}
         {!d.cooking ? (
           <div className="day-meta">{d.note ? d.note : 'Tento den se nevaří'}</div>
         ) : d.locked ? (

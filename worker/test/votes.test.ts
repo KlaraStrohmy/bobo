@@ -34,8 +34,10 @@ describe('votes', () => {
     expect(s.dishes.find((d) => d.id === 'vepr-na-karamelu')?.url).toBeNull();
   });
 
-  it('gives one vote per cooking day except Friday (Tue + Thu = 2)', async () => {
-    expect((await state(ALICE)).maxVotes).toBe(2);
+  it('gives everybody 4 votes a week, whatever the cooking days are', async () => {
+    expect((await state(ALICE)).maxVotes).toBe(4);
+    await c.put('/api/admin/settings', { cookingWeekdays: [5], cutoff: { daysBefore: 1, time: '16:00' } }, as(ADMIN));
+    expect((await state(ALICE)).maxVotes).toBe(4);
   });
 
   it('hides the counts until the user has voted, then reveals them', async () => {
@@ -49,13 +51,13 @@ describe('votes', () => {
     expect(s.dishes.find((d) => d.id === 'arasidove-curry')?.votes).toBe(0);
   });
 
-  it('refuses a vote over the limit but always allows removing one', async () => {
-    expect((await vote(ALICE, 'koprovka', true)).status).toBe(200);
-    expect((await vote(ALICE, 'rajska', true)).status).toBe(200);
-    expect((await vote(ALICE, 'arasidove-curry', true)).status).toBe(409);
-    expect((await state(ALICE)).myVotes).toEqual(['koprovka', 'rajska']);
-    expect((await vote(ALICE, 'koprovka', false)).status).toBe(200);
-    expect((await vote(ALICE, 'arasidove-curry', true)).status).toBe(200);
+  it('refuses a fifth vote but always allows removing one', async () => {
+    const ids = DISHES.slice(0, 5).map((d) => d.id);
+    for (const id of ids.slice(0, 4)) expect((await vote(ALICE, id, true)).status).toBe(200);
+    expect((await vote(ALICE, ids[4], true)).status).toBe(409);
+    expect([...(await state(ALICE)).myVotes].sort()).toEqual(ids.slice(0, 4).sort());
+    expect((await vote(ALICE, ids[0], false)).status).toBe(200);
+    expect((await vote(ALICE, ids[4], true)).status).toBe(200);
   });
 
   it('is idempotent: voting twice for the same dish counts once', async () => {
@@ -84,8 +86,4 @@ describe('votes', () => {
     expect(s.myVotes).toEqual([]);
   });
 
-  it('counts Friday-only cooking as one vote at minimum', async () => {
-    await c.put('/api/admin/settings', { cookingWeekdays: [5], cutoff: { daysBefore: 1, time: '16:00' } }, as(ADMIN));
-    expect((await state(ALICE)).maxVotes).toBe(1);
-  });
 });
