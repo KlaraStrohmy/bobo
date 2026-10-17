@@ -26,9 +26,21 @@ const WEEKS = 5;
 const MENU_PLACEHOLDER = '…';
 const FRIDAY = 5;
 
-/** What is cooking on a day: every Friday is burrito, the other days are not decided yet. */
-function dishFor(date: string): string {
-  return isoWeekday(date) === FRIDAY ? 'Burrito 🌯' : MENU_PLACEHOLDER;
+/** What is cooking on a day: the admin's pick, else burrito on Fridays, else not decided yet (null). */
+function dishOf(d: Day): { name: string; url: string | null } | null {
+  if (d.dish) return d.dish;
+  return isoWeekday(d.date) === FRIDAY ? { name: 'Burrito 🌯', url: null } : null;
+}
+
+/** The dish name, linked to the recipe when there is one (the address itself is never shown). */
+function DishText({ dish }: { dish: { name: string; url: string | null } | null }) {
+  if (!dish) return <>{MENU_PLACEHOLDER}</>;
+  if (!dish.url) return <>{dish.name}</>;
+  return (
+    <a className="dish-link" href={dish.url} target="_blank" rel="noopener noreferrer">
+      {dish.name}
+    </a>
+  );
 }
 
 interface Week {
@@ -289,7 +301,12 @@ function Hero({
       <p className="hero-greet">{greet}</p>
       <h1 className="hero-title">
         {headline}
-        {next && <span className="hero-food"> {dishFor(next.date)}</span>}
+        {next && (
+          <span className="hero-food">
+            {' '}
+            <DishText dish={dishOf(next)} />
+          </span>
+        )}
         {next && (
           <span className="hero-date">
             {weekdayLong(next.date)} {formatDayMonth(next.date)}
@@ -395,7 +412,11 @@ function DayCard({
             </span>
           )}
         </div>
-        {d.cooking && <div className="day-food">{dishFor(d.date)}</div>}
+        {d.cooking && (
+          <div className="day-food">
+            <DishText dish={dishOf(d)} />
+          </div>
+        )}
         {!d.cooking ? (
           <div className="day-meta">{d.note ? d.note : 'Tento den se nevaří'}</div>
         ) : d.locked ? (

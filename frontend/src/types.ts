@@ -27,6 +27,7 @@ export interface Day {
   attending: boolean | null;
   locked: boolean;
   cutoffAt: string;
+  dish: DayDish | null;
 }
 
 export interface UserRef {
@@ -39,6 +40,7 @@ export interface Overview {
   date: string;
   cooking: boolean;
   note: string | null;
+  dish: DayDish | null;
   counts: { yes: number; no: number; none: number };
   yes: UserRef[];
   no: UserRef[];
@@ -81,4 +83,11 @@ export interface DishVotes {
   myVotes: string[];
   /** `votes` is null until the user has voted themselves. */
   dishes: { id: string; name: string; url: string | null; votes: number | null }[];
+}
+
+/** What an admin picked to cook on a day. `dishId` is set when it came from the voting list. */
+export interface DayDish {
+  name: string;
+  url: string | null;
+  dishId: string | null;
 }

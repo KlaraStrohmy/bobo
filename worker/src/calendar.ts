@@ -1,5 +1,6 @@
 /** Cooking-day, cutoff and response logic (port of bobo.services.calendar). */
 import { addDays, dateRange, isoWeekday, zonedIso, zonedTime } from './tz';
+import { loadDayDishes, type DayDish } from './dayDishes';
 
 export interface CalendarSettings {
   cookingWeekdays: number[];
@@ -131,7 +132,7 @@ export async function getDayStatus(db: D1Database, day: string, now: Date): Prom
   return dayStatus(day, cs, await getOverride(db, day), now);
 }
 
-export function dayJson(status: DayStatus, attending: boolean | null) {
+export function dayJson(status: DayStatus, attending: boolean | null, dish: DayDish | null = null) {
   return {
     date: status.date,
     cooking: status.cooking,
@@ -140,17 +141,19 @@ export function dayJson(status: DayStatus, attending: boolean | null) {
     attending,
     locked: status.locked,
     cutoffAt: status.cutoffAt,
+    dish,
   };
 }
 
 export async function userCalendar(db: D1Database, userId: string, start: string, end: string, now: Date) {
-  const [cs, overrides, responses] = await Promise.all([
+  const [cs, overrides, responses, dishes] = await Promise.all([
     loadSettings(db),
     loadOverrides(db, start, end),
     loadUserResponses(db, userId, start, end),
+    loadDayDishes(db, start, end),
   ]);
   return dateRange(start, end).map((day) =>
-    dayJson(dayStatus(day, cs, overrides.get(day), now), responses.get(day) ?? null),
+    dayJson(dayStatus(day, cs, overrides.get(day), now), responses.get(day) ?? null, dishes.get(day) ?? null),
   );
 }
 

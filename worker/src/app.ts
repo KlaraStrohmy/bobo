@@ -17,6 +17,7 @@ import {
   settingsToApi,
   userCalendar,
 } from './calendar';
+import { getDayDish, setDayDish } from './dayDishes';
 import { isDishId } from './dishes';
 import type { Env } from './env';
 import { sendToUser } from './push';
@@ -244,10 +245,12 @@ export function createApp(options: AppOptions = {}) {
     if (!status.cooking) throw new HttpError(400, 'no cooking on this day');
     if (status.locked) throw new HttpError(409, 'cutoff has passed');
     await setResponse(c.env.DB, c.get('user').id, day, attending, 'web');
-    return c.json(dayJson(status, attending));
+    return c.json(dayJson(status, attending, await getDayDish(c.env.DB, day)));
   });
 
-  app.get('/votes', async (c) => c.json(await votesPayload(c.env.DB, c.get('user').id, c.get('now'))));
+  app.get('/votes', async (c) =>
+    c.json(await votesPayload(c.env.DB, c.get('user').id, c.get('now'), isAdmin(c.get('user'), c.env))),
+  );
 
   app.put('/votes/:dish', async (c) => {
     const dish = c.req.param('dish');
@@ -257,7 +260,7 @@ export function createApp(options: AppOptions = {}) {
     const user = c.get('user');
     const result = await setVote(c.env.DB, user.id, votingWeek(now), dish, voted, now);
     if (result === 'limit') throw new HttpError(409, 'vote limit reached');
-    return c.json(await votesPayload(c.env.DB, user.id, now));
+    return c.json(await votesPayload(c.env.DB, user.id, now, isAdmin(user, c.env)));
   });
 
   app.get('/push/vapid-public-key', (c) => c.json({ key: c.env.VAPID_PUBLIC_KEY ?? '' }));
@@ -340,11 +343,25 @@ export function createApp(options: AppOptions = {}) {
     return c.json({ ok: true });
   });
 
+  app.put('/admin/dishes/:day', async (c) => {
+    const day = dateValue(c.req.param('day'), 'day');
+    const body = await jsonBody(c);
+    const isStrOrNull = (v: unknown): v is string | null => v === null || typeof v === 'string';
+    const input = {
+      dishId: field(body, 'dishId', isStrOrNull, 'string or null', { value: null }),
+      name: field(body, 'name', isStrOrNull, 'string or null', { value: null }),
+      url: field(body, 'url', isStrOrNull, 'string or null', { value: null }),
+    };
+    const res = await setDayDish(c.env.DB, day, input, c.get('user').email, c.get('now'));
+    if (!res.ok) throw invalid(res.detail);
+    return c.json({ date: day, dish: res.dish });
+  });
+
   app.get('/admin/overview', async (c) => {
     const db = c.env.DB;
     const q = c.req.query('date');
     const day = q !== undefined ? dateValue(q, 'date') : await nextCookingDay(db, localParts(c.get('now')).date);
-    const [cs, override] = await Promise.all([loadSettings(db), getOverride(db, day)]);
+    const [cs, override, dish] = await Promise.all([loadSettings(db), getOverride(db, day), getDayDish(db, day)]);
     const [answersRes, usersRes] = await db.batch<Record<string, unknown>>([
       db.prepare('SELECT user_id, attending FROM responses WHERE date = ?1').bind(day),
       db.prepare('SELECT id, email, name, active FROM users ORDER BY name, email'),
@@ -358,6 +375,7 @@ export function createApp(options: AppOptions = {}) {
       date: day,
       cooking: isCooking(day, cs, override),
       note: override ? override.note : null,
+      dish,
       counts: { yes: yes.length, no: no.length, none: none.length },
       yes,
       no,

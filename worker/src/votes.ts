@@ -19,7 +19,8 @@ export async function myVotes(db: D1Database, userId: string, week: string): Pro
   return results.map((r) => r.dish_id);
 }
 
-export async function votesPayload(db: D1Database, userId: string, now: Date) {
+/** `revealAll`: admins always see the counts, since they decide what gets cooked. */
+export async function votesPayload(db: D1Database, userId: string, now: Date, revealAll = false) {
   const week = votingWeek(now);
   const max = VOTES_PER_WEEK;
   const [mine, counts] = await Promise.all([
@@ -30,7 +31,7 @@ export async function votesPayload(db: D1Database, userId: string, now: Date) {
       .all<{ dish_id: string; n: number }>(),
   ]);
   const n = new Map(counts.results.map((r) => [r.dish_id, r.n]));
-  const revealed = mine.length > 0; // no peeking before voting, so early votes do not steer the rest
+  const revealed = revealAll || mine.length > 0; // no peeking before voting, so early votes do not steer the rest
   return {
     week,
     maxVotes: max,

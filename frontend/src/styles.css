@@ -3944,3 +3944,39 @@ a.dish-name:hover {
     transition: none;
   }
 }
+
+/* dish chosen by the admin: linked name, editor on the Přehled page */
+.dish-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.hero .dish-link {
+  text-decoration-color: var(--outline);
+}
+.dish-link:hover {
+  text-decoration-color: var(--accent-text);
+}
+.dish-editor {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--saffron-soft);
+}
+.dish-editor .btn {
+  justify-self: start;
+}
+.dish-editor select {
+  width: 100%;
+}
+.dish-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}

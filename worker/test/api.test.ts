@@ -73,6 +73,7 @@ describe('API', () => {
       attending: null,
       locked: false,
       cutoffAt: '2026-10-14T16:00:00+02:00',
+      dish: null,
     });
     expect(days['2026-10-12'].locked).toBe(true); // cutoff was yesterday 16:00
     const overrides = (await (await c.get('/api/admin/overrides?from=2026-10-01&to=2026-10-31', ADM)).json()) as {

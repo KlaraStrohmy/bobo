@@ -15,6 +15,7 @@ import {
 import { Avatar, Card, Segmented, Skeleton, Toggle, type Answer } from '../components';
 import { Icon, type IconName } from '../icons';
 import { useToast } from '../toast';
+import DishEditor from './DishEditor';
 import type { AdminSettings, AdminUser, Override, Overview, SummaryDay, UserRef } from '../types';
 
 const cap = (s: string) => s.charAt(0).toLocaleUpperCase('cs') + s.slice(1);
@@ -268,6 +269,17 @@ function DayOverview({
               <Icon name="sparkle" size={16} />
               <span>{data.note}</span>
             </div>
+          )}
+          {data.cooking && (
+            <DishEditor
+              key={date}
+              date={date}
+              dish={data.dish}
+              onSaved={(dish) => {
+                setData((d) => (d ? { ...d, dish } : d));
+                onChanged();
+              }}
+            />
           )}
           <div className={`tiles ${data.cooking ? '' : 'is-dim'}`}>
             {tiles.map((t) => (
