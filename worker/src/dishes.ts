@@ -37,6 +37,7 @@ export const DISHES: readonly Dish[] = [
   { id: 'rajska', name: 'Rajská', url: 'https://www.instagram.com/reels/CrfPHwKNMkl/' },
   { id: 'veprova-panenka-s-bramborovou-kasi', name: 'Vepřová panenka s bramborovou kaší' },
   { id: 'arasidove-curry', name: 'Arašídové curry' },
+  { id: 'salat-s-pecenou-ryzi-a-lososem', name: 'Salát s pečenou rýží a lososem, okurkou a cottage' },
 ];
 
 const IDS = new Set(DISHES.map((d) => d.id));
