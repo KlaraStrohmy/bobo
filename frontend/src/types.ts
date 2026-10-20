@@ -82,7 +82,14 @@ export interface DishVotes {
   maxVotes: number;
   myVotes: string[];
   /** `votes` is null until the user has voted themselves. */
-  dishes: { id: string; name: string; url: string | null; votes: number | null }[];
+  dishes: {
+    id: string;
+    name: string;
+    url: string | null;
+    votes: number | null;
+    nutrition: Nutrition;
+    lactose: Lactose;
+  }[];
 }
 
 /** What an admin picked to cook on a day. `dishId` is set when it came from the voting list. */
@@ -91,3 +98,14 @@ export interface DayDish {
   url: string | null;
   dishId: string | null;
 }
+
+/** Grams per portion; `estimated` is false only when the numbers are printed on the recipe page. */
+export interface Nutrition {
+  protein: number;
+  fat: number;
+  carbs: number;
+  estimated: boolean;
+}
+
+/** yes = milk, cream, yogurt or fresh cheese; trace = only aged cheese such as parmesan. */
+export type Lactose = 'yes' | 'trace' | 'no';

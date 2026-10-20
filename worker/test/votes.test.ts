@@ -9,7 +9,14 @@ interface Payload {
   week: string;
   maxVotes: number;
   myVotes: string[];
-  dishes: { id: string; name: string; url: string | null; votes: number | null }[];
+  dishes: {
+    id: string;
+    name: string;
+    url: string | null;
+    votes: number | null;
+    lactose: string;
+    nutrition: { protein: number; fat: number; carbs: number; estimated: boolean };
+  }[];
 }
 
 let clock: Clock;
@@ -32,6 +39,24 @@ describe('votes', () => {
     const paprice = s.dishes.find((d) => d.id === 'kure-na-paprice');
     expect(paprice?.url).toBe('https://www.rohlik.cz/chef/21-kure-na-paprice');
     expect(s.dishes.find((d) => d.id === 'vepr-na-karamelu')?.url).toBeNull();
+  });
+
+  it('has nutrition and lactose for every dish, with calories that add up', async () => {
+    const s = await state(ALICE);
+    for (const d of s.dishes) {
+      const { protein, fat, carbs } = d.nutrition;
+      for (const g of [protein, fat, carbs]) expect(Number.isFinite(g) && g >= 0, d.name).toBe(true);
+      const kcal = protein * 4 + fat * 9 + carbs * 4;
+      expect(kcal, d.name).toBeGreaterThan(200); // a meal, not a garnish
+      expect(kcal, d.name).toBeLessThan(1400);
+      expect(['yes', 'trace', 'no'], d.name).toContain(d.lactose);
+    }
+    const byId = new Map(s.dishes.map((d) => [d.id, d]));
+    // numbers printed on recipe pages are not estimates, calculated ones are
+    expect(byId.get('pecene-testoviny-s-tunakem')?.nutrition).toEqual({ protein: 31, fat: 11, carbs: 60, estimated: false });
+    expect(byId.get('kure-na-paprice')?.nutrition.estimated).toBe(true);
+    expect(byId.get('koprovka')?.lactose).toBe('yes');
+    expect(byId.get('arasidove-curry')?.lactose).toBe('no');
   });
 
   it('gives everybody 4 votes a week, whatever the cooking days are', async () => {

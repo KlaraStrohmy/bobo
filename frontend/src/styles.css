@@ -3946,3 +3946,59 @@ a.dish-name:hover {
   gap: 6px;
   margin: 0;
 }
+
+/* nutrition chips + lactose tag on the voting cards */
+.vote-legend {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.dish-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.fact {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.fact b {
+  color: var(--ink);
+}
+.fact-p b {
+  color: var(--yes-text);
+}
+.fact-f b {
+  color: var(--saffron-text);
+}
+.fact-c b {
+  color: var(--accent-text);
+}
+.fact-lactose {
+  border: 2px solid var(--outline);
+  padding: 0 8px;
+  background: var(--no-soft);
+  color: var(--no-text);
+}
+.fact-lactose.is-trace {
+  background: var(--saffron-soft);
+  color: var(--saffron-text);
+}
+.fact {
+  gap: 2px;
+  padding: 1px 7px;
+  font-size: 12px;
+}
+.dish-facts {
+  gap: 4px;
+}

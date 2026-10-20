@@ -36,7 +36,14 @@ export async function votesPayload(db: D1Database, userId: string, now: Date, re
     week,
     maxVotes: max,
     myVotes: mine,
-    dishes: DISHES.map((d) => ({ id: d.id, name: d.name, url: d.url ?? null, votes: revealed ? (n.get(d.id) ?? 0) : null })),
+    dishes: DISHES.map((d) => ({
+      id: d.id,
+      name: d.name,
+      url: d.url ?? null,
+      nutrition: d.nutrition,
+      lactose: d.lactose,
+      votes: revealed ? (n.get(d.id) ?? 0) : null,
+    })),
   };
 }
 

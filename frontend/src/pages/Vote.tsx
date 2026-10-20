@@ -4,7 +4,7 @@ import { ErrorState } from '../components';
 import { formatDayMonth } from '../dates';
 import { Icon } from '../icons';
 import { useToast } from '../toast';
-import type { DishVotes, Me } from '../types';
+import type { DishVotes, Lactose, Me, Nutrition } from '../types';
 
 /** Deterministic shuffle: same order for one person within a week, different between people. */
 function shuffled<T>(items: T[], seed: string): T[] {
@@ -124,6 +124,30 @@ function DogSlider({
   );
 }
 
+const LACTOSE_LABEL: Record<Exclude<Lactose, 'no'>, string> = { yes: 'laktóza', trace: 'stopy laktózy' };
+
+/** Protein / fat / carbs per portion, plus a lactose tag. A leading ~ marks calculated or guessed numbers. */
+function Facts({ nutrition, lactose }: { nutrition: Nutrition; lactose: Lactose }) {
+  const tilde = nutrition.estimated ? '~' : '';
+  const items: { key: string; label: string; title: string; value: number }[] = [
+    { key: 'p', label: 'B', title: 'bílkoviny', value: nutrition.protein },
+    { key: 'f', label: 'T', title: 'tuky', value: nutrition.fat },
+    { key: 'c', label: 'S', title: 'sacharidy', value: nutrition.carbs },
+  ];
+  return (
+    <div className="dish-facts">
+      {items.map((i) => (
+        <span key={i.key} className={`fact fact-${i.key}`} title={`${i.title}: ${tilde}${i.value} g na porci`}>
+          <b>{i.label}</b>
+          {tilde}
+          {i.value}
+        </span>
+      ))}
+      {lactose !== 'no' && <span className={`fact fact-lactose is-${lactose}`}>{LACTOSE_LABEL[lactose]}</span>}
+    </div>
+  );
+}
+
 export default function VotePage({ me, onBack }: { me: Me; onBack: () => void }) {
   const toast = useToast();
   const [data, setData] = useState<DishVotes | null>(null);
@@ -200,6 +224,11 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
         </span>
       </div>
 
+      <p className="vote-legend">
+        <b>Všechna jídla jsou bez lepku a sóji.</b> <b>B</b> bílkoviny, <b>T</b> tuky, <b>S</b> sacharidy v gramech na porci; <b>~</b> je odhad nebo
+        výpočet, ne údaj z receptu.
+      </p>
+
       <ul className="dishes">
         {order.map((id) => {
           const d = byId.get(id)!;
@@ -216,6 +245,7 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
                 ) : (
                   <span className="dish-name">{d.name}</span>
                 )}
+                <Facts nutrition={d.nutrition} lactose={d.lactose} />
                 {d.votes !== null && (
                   <span className="dish-count" aria-label={`Hlasů: ${d.votes}`}>
                     <span className="dish-bar" aria-hidden>
