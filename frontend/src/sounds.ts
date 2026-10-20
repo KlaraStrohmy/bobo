@@ -12,6 +12,9 @@ function context(): AudioContext | null {
 
 /** Call from a tap, click or key handler: creates and resumes the audio context while the gesture is still active. */
 export function unlockAudio(): void {
+  // iPhone: with the ring switch on silent, web audio stays muted unless the page asks for "playback" (Safari 16.4+)
+  const session = (navigator as unknown as { audioSession?: { type: string } }).audioSession;
+  if (session) session.type = 'playback';
   void context()?.resume();
 }
 
