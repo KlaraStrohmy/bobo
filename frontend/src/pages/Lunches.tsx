@@ -18,6 +18,7 @@ import { ErrorState, firstName, Segmented, Skeleton, type Answer } from '../comp
 import { Cow, moodFor, Pig } from '../farmAnimals';
 import { Icon } from '../icons';
 import { InstallBanner } from '../installGuide';
+import { Rain } from '../rain';
 import { useToast } from '../toast';
 import type { Day, Me } from '../types';
 
@@ -25,6 +26,18 @@ const WEEKS = 5;
 /** What is cooking; the backend has no menu yet, so this is a placeholder. */
 const MENU_PLACEHOLDER = '…';
 const FRIDAY = 5;
+
+/** Days until the next Friday, 0 on a Friday. */
+function daysToFriday(date: string): number {
+  return (FRIDAY - isoWeekday(date) + 7) % 7;
+}
+
+function burritoCountdown(days: number): string {
+  if (days === 0) return 'Dnes je burrito!';
+  if (days === 1) return 'Do burrita zbývá 1 den';
+  if (days < 5) return `Do burrita zbývají ${days} dny`;
+  return `Do burrita zbývá ${days} dní`;
+}
 
 /** What is cooking on a day: the admin's pick, else burrito on Fridays, else not decided yet (null). */
 function dishOf(d: Day): { name: string; url: string | null } | null {
@@ -79,6 +92,24 @@ export default function LunchesPage({ me, onVote }: { me: Me; onVote: () => void
   const [days, setDays] = useState<Day[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Burrito rain once per Friday and session; add ?burrito to the address to see it on any day.
+  const [burritoRain, setBurritoRain] = useState(() => {
+    if (new URLSearchParams(window.location.search).has('burrito')) return true;
+    if (daysToFriday(todayPrague()) !== 0) return false;
+    try {
+      return sessionStorage.getItem('bobo.burritoRain') !== todayPrague();
+    } catch {
+      return true;
+    }
+  });
+  const endBurritoRain = useCallback(() => {
+    setBurritoRain(false);
+    try {
+      sessionStorage.setItem('bobo.burritoRain', todayPrague());
+    } catch {
+      // sessionStorage unavailable: the rain may repeat on reload, which is harmless
+    }
+  }, []);
   const highlight = useMemo(() => new URLSearchParams(window.location.search).get('date'), []);
   const scrolled = useRef(false);
 
@@ -210,6 +241,16 @@ export default function LunchesPage({ me, onVote }: { me: Me; onVote: () => void
           </button>
         </div>
       </section>
+
+      <p className={`burrito-pill ${daysToFriday(today) === 0 ? 'is-today' : ''}`}>
+        <span>
+          <span className="burrito-emoji" aria-hidden>
+            🌯
+          </span>
+          {burritoCountdown(daysToFriday(today))}
+        </span>
+      </p>
+      {burritoRain && <Rain emojis={['🌯']} count={18} onDone={endBurritoRain} />}
 
       <div className="vote-row">
         <button type="button" className="vote-btn" onClick={onVote}>

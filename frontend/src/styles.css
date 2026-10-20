@@ -4002,3 +4002,110 @@ a.dish-name:hover {
 .dish-facts {
   gap: 4px;
 }
+
+/* ==========================================================================
+   Fun: emoji rain (burrito Friday, paws for the dog) and the dog's "Haf!"
+   ========================================================================== */
+.rain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+.rain span {
+  position: absolute;
+  top: -12vh;
+  line-height: 1;
+  animation-name: rain-fall;
+  animation-timing-function: cubic-bezier(0.3, 0.1, 0.6, 1);
+  animation-fill-mode: forwards;
+}
+@keyframes rain-fall {
+  to {
+    transform: translateY(125vh) rotate(var(--spin));
+  }
+}
+.burrito-pill {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0 0;
+}
+.burrito-pill span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: var(--sticker-w) solid var(--outline);
+  border-radius: var(--r-pill);
+  background: var(--saffron-soft);
+  font-weight: 800;
+  box-shadow: 0 3px 0 var(--outline);
+}
+.burrito-pill .burrito-emoji {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-size: 22px;
+}
+.burrito-pill.is-today span:not(.burrito-emoji) {
+  background: var(--saffron);
+}
+.bark {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 4px);
+  z-index: 3;
+  padding: 2px 12px 4px;
+  border: var(--sticker-w) solid var(--outline);
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: var(--outline);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 var(--outline);
+  transform: translateX(-50%);
+  animation: bark-pop 1.6s var(--ease-spring) forwards;
+  pointer-events: none;
+}
+.bark::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 12px;
+  height: 12px;
+  border-right: var(--sticker-w) solid var(--outline);
+  border-bottom: var(--sticker-w) solid var(--outline);
+  background: #fff;
+  transform: translateX(-50%) rotate(45deg);
+}
+@keyframes bark-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.4);
+  }
+  14% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.12);
+  }
+  24% {
+    transform: translateX(-50%) scale(1);
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bark {
+    animation: none;
+  }
+}

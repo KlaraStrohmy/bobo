@@ -3,6 +3,7 @@ import { api, ApiError, errorMessage } from '../api';
 import { ErrorState } from '../components';
 import { formatDayMonth } from '../dates';
 import { Icon } from '../icons';
+import { Rain } from '../rain';
 import { useToast } from '../toast';
 import type { DishVotes, Lactose, Me, Nutrition } from '../types';
 
@@ -32,6 +33,7 @@ function DogSlider({
   locked,
   disabled,
   label,
+  bark,
   onChange,
   onBlocked,
 }: {
@@ -40,12 +42,34 @@ function DogSlider({
   locked: boolean;
   disabled: boolean;
   label: string;
+  /** The parent makes the dog bark (all votes used). */
+  bark: boolean;
   onChange: (v: boolean) => void;
   onBlocked: () => void;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const drag = useRef<{ id: number; x0: number; moved: boolean } | null>(null);
+  const drag = useRef<{ id: number; x0: number; moved: boolean; long: boolean } | null>(null);
+  const pressTimer = useRef<number | null>(null);
   const [dragPos, setDragPos] = useState<number | null>(null);
+  const [barkLocal, setBarkLocal] = useState(false);
+  const barking = bark || barkLocal;
+
+  const clearPress = () => {
+    if (pressTimer.current !== null) window.clearTimeout(pressTimer.current);
+    pressTimer.current = null;
+  };
+  // holding the dog without moving makes it bark, and does not count as a tap
+  const startPress = () => {
+    clearPress();
+    pressTimer.current = window.setTimeout(() => {
+      const d = drag.current;
+      if (d && !d.moved) {
+        d.long = true;
+        setBarkLocal(true);
+        window.setTimeout(() => setBarkLocal(false), 1600);
+      }
+    }, 550);
+  };
   const pos = dragPos ?? (on ? 1 : 0);
   const shownOn = dragPos === null ? on : dragPos > 0.5;
 
@@ -64,21 +88,24 @@ function DogSlider({
 
   const down = (e: PointerEvent<HTMLDivElement>) => {
     if (disabled || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    drag.current = { id: e.pointerId, x0: e.clientX, moved: false };
+    drag.current = { id: e.pointerId, x0: e.clientX, moved: false, long: false };
     e.currentTarget.setPointerCapture(e.pointerId);
+    startPress();
   };
   const move = (e: PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
     if (!d.moved && Math.abs(e.clientX - d.x0) < 6) return;
     d.moved = true;
+    clearPress();
     setDragPos(posFrom(e.clientX));
   };
   const up = (e: PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
     drag.current = null;
-    decide(d.moved ? posFrom(e.clientX) > 0.5 : !on);
+    clearPress();
+    if (!d.long) decide(d.moved ? posFrom(e.clientX) > 0.5 : !on);
     setDragPos(null);
   };
   const key = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -106,6 +133,7 @@ function DogSlider({
       onPointerUp={up}
       onPointerCancel={() => {
         drag.current = null;
+        clearPress();
         setDragPos(null);
       }}
       onKeyDown={key}
@@ -118,6 +146,7 @@ function DogSlider({
         <Icon name="check" size={18} strokeWidth={3.2} />
       </span>
       <span className="vsl-head" aria-hidden>
+        {barking && <span className="bark">Haf!</span>}
         <img src="/dog.png" alt="" width={90} height={131} draggable={false} />
       </span>
     </div>
@@ -153,6 +182,9 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
   const [data, setData] = useState<DishVotes | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [barkId, setBarkId] = useState<string | null>(null);
+  const [paws, setPaws] = useState(false);
+  const endPaws = useCallback(() => setPaws(false), []);
 
   const load = useCallback(async () => {
     try {
@@ -172,7 +204,14 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
   const toggle = async (id: string, voted: boolean) => {
     setBusy(id);
     try {
-      setData(await api<DishVotes>(`/votes/${id}`, { method: 'PUT', body: { voted } }));
+      const next = await api<DishVotes>(`/votes/${id}`, { method: 'PUT', body: { voted } });
+      setData(next);
+      if (voted && next.myVotes.length >= next.maxVotes) {
+        // the last vote is in: the dog barks and paws fall
+        setBarkId(id);
+        setPaws(true);
+        window.setTimeout(() => setBarkId((cur) => (cur === id ? null : cur)), 1700);
+      }
     } catch (e) {
       if (e instanceof ApiError && e.status === 409) toast('Hlasy ti došly, nejdřív jeden vrať.', 'error');
       else toast(errorMessage(e), 'error');
@@ -192,6 +231,7 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
 
   return (
     <div className="page vote-page">
+      {paws && <Rain emojis={['🐾', '🦴', '🐾']} count={22} onDone={endPaws} />}
       <button type="button" className="vote-back" onClick={onBack}>
         <Icon name="chevronLeft" size={16} strokeWidth={2.6} />
         Obědy
@@ -260,6 +300,7 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
                 locked={left <= 0}
                 disabled={busy !== null}
                 label={`Hlas pro ${d.name}`}
+                bark={barkId === id}
                 onChange={(voted) => void toggle(id, voted)}
                 onBlocked={() => toast('Hlasy ti došly, nejdřív jeden vrať.', 'error')}
               />
