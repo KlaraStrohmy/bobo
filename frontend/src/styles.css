@@ -4109,3 +4109,13 @@ a.dish-name:hover {
     animation: none;
   }
 }
+.vote-credit {
+  margin: -4px 0 0;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+.vote-credit a {
+  color: inherit;
+  text-decoration: underline;
+}

@@ -1,7 +1,7 @@
 /**
- * Dog bark for the voting page. The real recording is /bark.wav (two barks cut from "Ladrido perro.ogg" by Edo.pt2,
- * Wikimedia Commons, CC0 / public domain, so no credit is required). If it cannot be loaded, a synthesized bark is played instead.
- * Browsers only allow sound after a tap or key press.
+ * Dog bark for the voting page. The recording is /bark.wav: two barks cut from "Barking of a dog 2.ogg" by Amada44
+ * (Wikimedia Commons, CC BY-SA 3.0, credited on the voting page and in bark-LICENSE.txt). If it cannot be loaded,
+ * a synthesized bark is played instead. Browsers only allow sound after a tap or key press.
  */
 
 let ctx: AudioContext | null = null;

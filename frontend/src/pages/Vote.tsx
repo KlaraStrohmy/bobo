@@ -160,6 +160,9 @@ function DogSlider({
   );
 }
 
+/** The dog barks (and paws fall) when this many votes are given. */
+const BARK_AT_VOTES = 2;
+
 const LACTOSE_LABEL: Record<Exclude<Lactose, 'no'>, string> = { yes: 'laktóza', trace: 'stopy laktózy' };
 
 /** Protein / fat / carbs per portion, plus a lactose tag. A leading ~ marks calculated or guessed numbers. */
@@ -213,8 +216,8 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
     try {
       const next = await api<DishVotes>(`/votes/${id}`, { method: 'PUT', body: { voted } });
       setData(next);
-      if (voted && next.myVotes.length >= next.maxVotes) {
-        // the last vote is in: the dog barks and paws fall
+      if (voted && next.myVotes.length === BARK_AT_VOTES) {
+        // the second vote is in: the dog barks and paws fall
         setBarkId(id);
         setPaws(true);
         window.setTimeout(() => setBarkId((cur) => (cur === id ? null : cur)), 1700);
@@ -316,6 +319,13 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
         })}
       </ul>
       <p className="vote-note">Počty hlasů uvidíš, jakmile hlasuješ sám.</p>
+      <p className="vote-credit">
+        Štěkání: Amada44,{' '}
+        <a href="https://commons.wikimedia.org/wiki/File:Barking_of_a_dog_2.ogg" target="_blank" rel="noopener noreferrer">
+          Wikimedia Commons
+        </a>
+        , <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>
+      </p>
     </div>
   );
 }

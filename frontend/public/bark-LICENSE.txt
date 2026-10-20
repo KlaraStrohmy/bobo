@@ -1,0 +1,6 @@
+bark.wav: two barks cut and joined from "Barking of a dog 2.ogg"
+Author: Amada44, Wikimedia Commons
+https://commons.wikimedia.org/wiki/File:Barking_of_a_dog_2.ogg
+License: CC BY-SA 3.0, https://creativecommons.org/licenses/by-sa/3.0/
+Changes: shortened to two barks, level normalised, fades added, converted to 24 kHz mono WAV.
+This adapted recording is shared under the same license (CC BY-SA 3.0).
