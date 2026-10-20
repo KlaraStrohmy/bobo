@@ -7,6 +7,7 @@
  *
  * Every dish is gluten- and soy-free by default (agreed with the cook), so only lactose is tracked:
  * 'yes' = milk, cream, yogurt or fresh cheese in it; 'trace' = only aged cheese such as parmesan.
+ * The cook uses ghee wherever a recipe says butter, so butter alone never makes a dish 'yes'.
  */
 export type Lactose = 'yes' | 'trace' | 'no';
 
@@ -30,8 +31,8 @@ const n = (protein: number, fat: number, carbs: number, estimated = true): Nutri
 export const DISHES: readonly Dish[] = [
   // reel, not readable without a login: typical lemon chicken, meat and sauce only
   { id: 'kure-na-citronech', name: 'Kuře na citronech', url: 'https://www.instagram.com/reels/CxruyHbMUfr/', nutrition: n(38, 26, 6), lactose: 'no' },
-  // calculated from the recipe's ingredients for 4 portions (800 g chicken, 600 ml cream, butter, bacon, žervé)
-  { id: 'kure-na-paprice', name: 'Kuře na paprice', url: 'https://www.rohlik.cz/chef/21-kure-na-paprice', nutrition: n(58, 95, 17), lactose: 'yes' },
+  // calculated from the recipe's ingredients for 4 portions (800 g chicken, 600 ml cream, 80 g butter made as ghee, bacon, žervé)
+  { id: 'kure-na-paprice', name: 'Kuře na paprice', url: 'https://www.rohlik.cz/chef/21-kure-na-paprice', nutrition: n(58, 98, 17), lactose: 'yes' },
   // pork shoulder with caramel sauce + about 150 g cooked rice as the side
   { id: 'vepr-na-karamelu', name: 'Vepř na karamelu', nutrition: n(36, 26, 64), lactose: 'no' },
   { id: 'pecene-kure-s-bramborem-a-mrkvi', name: 'Pečené kuře s bramborem a mrkví', nutrition: n(38, 30, 42), lactose: 'no' },
