@@ -1,6 +1,22 @@
-/** Small synthesized sounds (Web Audio), so no audio files are needed. Browsers only allow sound after a tap or key press. */
+/**
+ * Dog bark for the voting page. The real recording is /bark.wav (two barks cut from "Ladrido perro.ogg" by Edo.pt2,
+ * Wikimedia Commons, CC0 / public domain, so no credit is required). If it cannot be loaded, a synthesized bark is played instead.
+ * Browsers only allow sound after a tap or key press.
+ */
 
 let ctx: AudioContext | null = null;
+let sample: AudioBuffer | null = null;
+let loading: Promise<void> | null = null;
+
+async function loadSample(ac: AudioContext): Promise<void> {
+  try {
+    const res = await fetch('/bark.wav');
+    if (!res.ok) return;
+    sample = await ac.decodeAudioData(await res.arrayBuffer());
+  } catch {
+    // offline or undecodable: the synthesized bark is the fallback
+  }
+}
 
 function context(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -15,7 +31,10 @@ export function unlockAudio(): void {
   // iPhone: with the ring switch on silent, web audio stays muted unless the page asks for "playback" (Safari 16.4+)
   const session = (navigator as unknown as { audioSession?: { type: string } }).audioSession;
   if (session) session.type = 'playback';
-  void context()?.resume();
+  const ac = context();
+  if (!ac) return;
+  void ac.resume();
+  loading ??= loadSample(ac); // fetch the recording on the first touch so it is ready when the dog barks
 }
 
 /** One "haf": a falling, slightly rough voice plus a short breath of noise at the start. */
@@ -58,11 +77,20 @@ export function buildBark(ac: BaseAudioContext, out: AudioNode, t0: number, pitc
   breath.start(t0);
 }
 
-/** "Haf haf!": two barks, the second a little higher. */
+/** "Haf haf!": the recording, or two synthesized barks (the second a little higher) while it is not loaded. */
 export function playBark(): void {
   const ac = context();
   if (!ac) return;
   void ac.resume().then(() => {
+    if (sample) {
+      const src = ac.createBufferSource();
+      src.buffer = sample;
+      const gain = ac.createGain();
+      gain.gain.value = 1;
+      src.connect(gain).connect(ac.destination);
+      src.start();
+      return;
+    }
     const master = ac.createGain();
     master.gain.value = 0.8;
     master.connect(ac.destination);
