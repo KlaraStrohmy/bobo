@@ -4,6 +4,7 @@ import { ErrorState } from '../components';
 import { formatDayMonth } from '../dates';
 import { Icon } from '../icons';
 import { Rain } from '../rain';
+import { playBark, unlockAudio } from '../sounds';
 import { useToast } from '../toast';
 import type { DishVotes, Lactose, Me, Nutrition } from '../types';
 
@@ -53,6 +54,10 @@ function DogSlider({
   const [dragPos, setDragPos] = useState<number | null>(null);
   const [barkLocal, setBarkLocal] = useState(false);
   const barking = bark || barkLocal;
+  // the bubble and the sound belong together: whenever the dog starts barking, it also says it out loud
+  useEffect(() => {
+    if (barking) playBark();
+  }, [barking]);
 
   const clearPress = () => {
     if (pressTimer.current !== null) window.clearTimeout(pressTimer.current);
@@ -88,6 +93,7 @@ function DogSlider({
 
   const down = (e: PointerEvent<HTMLDivElement>) => {
     if (disabled || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    unlockAudio(); // browsers only allow sound after a gesture, so prepare it on the first touch
     drag.current = { id: e.pointerId, x0: e.clientX, moved: false, long: false };
     e.currentTarget.setPointerCapture(e.pointerId);
     startPress();
@@ -110,6 +116,7 @@ function DogSlider({
   };
   const key = (e: KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return;
+    unlockAudio();
     if (e.key === 'ArrowRight') decide(true);
     else if (e.key === 'ArrowLeft') decide(false);
     else if (e.key === 'Enter' || e.key === ' ') decide(!on);
