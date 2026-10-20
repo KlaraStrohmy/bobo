@@ -213,8 +213,11 @@ export default function LunchesPage({ me, onVote }: { me: Me; onVote: () => void
 
       <div className="vote-row">
         <button type="button" className="vote-btn" onClick={onVote}>
-          <img src="/ramen.png" alt="" width={72} height={79} />
-          <span>Hlasuj!</span>
+          <img src="/ramen.png" alt="" width={78} height={85} />
+          <span className="vote-label">Hlasuj!</span>
+          <span className="vote-go" aria-hidden>
+            <Icon name="chevronRight" size={20} strokeWidth={3.2} />
+          </span>
         </button>
       </div>
 

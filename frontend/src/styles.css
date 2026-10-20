@@ -3555,130 +3555,96 @@ h3 {
   color: var(--ink);
 }
 
-/* "Hlasuj!" sticker above the hero: ramen bowl with a label underneath */
+/* "Hlasuj!" is a real button: purple pill with a hard shadow that presses down, ramen on the left */
 .vote-row {
   display: flex;
-  justify-content: flex-end;
-  margin: 6px 4px -10px;
+  justify-content: center;
+  margin: 26px 0 8px;
 }
 .vote-btn {
   position: relative;
-  z-index: 2;
-  display: grid;
-  justify-items: center;
-  gap: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  transform: rotate(5deg);
-  transition: transform 220ms var(--ease-spring);
-  animation: vote-bob 3.2s ease-in-out infinite;
-}
-.vote-btn img {
-  display: block;
-  width: 72px;
-  height: auto;
-  filter: drop-shadow(0 4px 0 rgba(43, 31, 63, 0.22));
-}
-.vote-btn span {
-  margin-top: -6px;
-  padding: 1px 12px 3px;
-  border: var(--sticker-w) solid var(--outline);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(100%, 340px);
+  min-height: 72px;
+  padding: 8px 18px 8px 96px;
+  border: 3px solid var(--outline);
   border-radius: var(--r-pill);
-  background: var(--accent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 82%, #fff) 0%, var(--accent) 55%);
   color: var(--accent-ink);
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 30px;
   font-weight: 800;
-  line-height: 1.15;
-  box-shadow: 0 3px 0 var(--outline);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-align: left;
+  box-shadow:
+    0 6px 0 var(--outline),
+    0 14px 22px -10px rgba(43, 31, 63, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition:
+    transform var(--dur-1) var(--ease),
+    box-shadow var(--dur-1) var(--ease),
+    filter var(--dur-2) var(--ease);
+}
+.vote-btn img {
+  position: absolute;
+  left: 10px;
+  bottom: 2px;
+  width: 78px;
+  height: auto;
+  margin: 0;
+  filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 2px 0 var(--outline))
+    drop-shadow(0 -2px 0 var(--outline));
+  transform: rotate(-6deg);
+  transform-origin: 50% 80%;
+  transition: transform 260ms var(--ease-spring);
+  pointer-events: none;
+}
+.vote-btn .vote-label {
+  flex: 1;
+  text-shadow: 0 2px 0 rgba(43, 31, 63, 0.35);
+}
+.vote-btn .vote-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 3px solid var(--outline);
+  border-radius: 50%;
+  background: var(--saffron);
+  color: var(--outline);
+  transition: transform 220ms var(--ease-spring);
 }
 .vote-btn:hover {
-  transform: rotate(-4deg) scale(1.08);
+  filter: brightness(1.06);
+}
+.vote-btn:hover img {
+  transform: rotate(4deg) scale(1.08) translateY(-3px);
+}
+.vote-btn:hover .vote-go {
+  transform: translateX(3px);
 }
 .vote-btn:active {
-  transform: rotate(0deg) scale(0.96);
+  transform: translateY(5px);
+  box-shadow:
+    0 1px 0 var(--outline),
+    0 6px 12px -8px rgba(43, 31, 63, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25);
 }
 .vote-btn:focus-visible {
   outline: 3px solid var(--focus);
-  outline-offset: 4px;
-  border-radius: var(--r-md);
-}
-@keyframes vote-bob {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 0 -4px;
-  }
+  outline-offset: 5px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .vote-btn {
-    animation: none;
+  .vote-btn,
+  .vote-btn img,
+  .vote-btn .vote-go {
+    transition: none;
   }
-}
-
-/* wide screens: the vote sticker sits to the right of the hero card instead of above it */
-@media (min-width: 820px) {
-  .top-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    column-gap: 28px;
-  }
-  .top-row > .hero {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .top-row > .vote-row {
-    grid-column: 2;
-    grid-row: 1;
-    margin: 0 8px;
-  }
-  .vote-btn img {
-    width: 112px;
-  }
-  .vote-btn span {
-    font-size: 21px;
-    padding: 2px 16px 4px;
-  }
-}
-/* the chicken sticks out above its track: keep the status text clear of it */
-.hero-row {
-  row-gap: 24px;
-}
-
-/* "Hlasuj!" always sits under the quick-fill chips, centered, on every screen size */
-.vote-row {
-  justify-content: center;
-  margin: 14px 0 4px;
-}
-.vote-btn img {
-  width: 96px;
-}
-.vote-btn span {
-  font-size: 19px;
-  padding: 2px 15px 4px;
-}
-@media (min-width: 820px) {
-  .top-row {
-    display: block;
-  }
-  .top-row > .vote-row {
-    margin: 14px 0 4px;
-  }
-  .vote-btn img {
-    width: 96px;
-  }
-  .vote-btn span {
-    font-size: 19px;
-  }
-}
-/* dark sticker outline around the whole ramen picture (the inner lines are baked into the image) */
-.vote-btn img {
-  filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 2px 0 var(--outline))
-    drop-shadow(0 -2px 0 var(--outline)) drop-shadow(0 5px 0 rgba(43, 31, 63, 0.25));
 }
 
 /* ==========================================================================
