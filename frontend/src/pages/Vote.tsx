@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
 import { api, ApiError, errorMessage } from '../api';
 import { ErrorState } from '../components';
-import { formatDayMonth } from '../dates';
+import { formatDayMonth, todayPrague } from '../dates';
 import { Icon } from '../icons';
 import { Rain } from '../rain';
+import { rainThemeFor, rainThemeFromUrl } from '../rainThemes';
 import { playBark, unlockAudio } from '../sounds';
 import { useToast } from '../toast';
 import type { DishVotes, Lactose, Me, Nutrition } from '../types';
@@ -195,6 +196,8 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
   const [barkId, setBarkId] = useState<string | null>(null);
   const [paws, setPaws] = useState(false);
   const endPaws = useCallback(() => setPaws(false), []);
+  // what falls: a new theme every week, see rainThemes.ts
+  const theme = useMemo(() => rainThemeFromUrl(window.location.search) ?? rainThemeFor(todayPrague()), []);
 
   const load = useCallback(async () => {
     try {
@@ -241,7 +244,7 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
 
   return (
     <div className="page vote-page">
-      {paws && <Rain emojis={['🐾']} count={22} onDone={endPaws} />}
+      {paws && <Rain emojis={theme.emojis} count={22} onDone={endPaws} />}
       <button type="button" className="vote-back" onClick={onBack}>
         <Icon name="chevronLeft" size={16} strokeWidth={2.6} />
         Obědy
