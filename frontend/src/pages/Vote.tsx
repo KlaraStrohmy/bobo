@@ -231,7 +231,7 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
 
   return (
     <div className="page vote-page">
-      {paws && <Rain emojis={['🐾', '🦴', '🐾']} count={22} onDone={endPaws} />}
+      {paws && <Rain emojis={['🐾']} count={22} onDone={endPaws} />}
       <button type="button" className="vote-back" onClick={onBack}>
         <Icon name="chevronLeft" size={16} strokeWidth={2.6} />
         Obědy
