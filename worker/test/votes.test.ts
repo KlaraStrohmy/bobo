@@ -56,6 +56,8 @@ describe('votes', () => {
     expect(byId.get('pecene-testoviny-s-tunakem')?.nutrition).toEqual({ protein: 31, fat: 11, carbs: 60, estimated: false });
     expect(byId.get('kure-na-paprice')?.nutrition.estimated).toBe(true);
     expect(byId.get('koprovka')?.lactose).toBe('yes');
+    expect(byId.get('rajska')?.lactose).toBe('no'); // ghee only
+    expect(byId.get('veprova-panenka-s-bramborovou-kasi')?.lactose).toBe('no'); // lactose-free mash
     expect(byId.get('arasidove-curry')?.lactose).toBe('no');
   });
 

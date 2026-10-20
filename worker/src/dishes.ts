@@ -75,9 +75,10 @@ export const DISHES: readonly Dish[] = [
   { id: 'testoviny-s-omackou-z-pecenych-paprik', name: 'Těstoviny s omáčkou z pečených paprik', nutrition: n(22, 37, 83), lactose: 'yes' },
   // reel, not readable: classic dill sauce with eggs and potatoes (milk, cream)
   { id: 'koprovka', name: 'Koprovka', url: 'https://www.instagram.com/reels/Cy7l6q3s38h/', nutrition: n(24, 32, 60), lactose: 'yes' },
-  // reel, not readable: tomato sauce with beef and rice, classic version with milk/cream
-  { id: 'rajska', name: 'Rajská', url: 'https://www.instagram.com/reels/CrfPHwKNMkl/', nutrition: n(30, 14, 62), lactose: 'yes' },
-  { id: 'veprova-panenka-s-bramborovou-kasi', name: 'Vepřová panenka s bramborovou kaší', nutrition: n(44, 22, 48), lactose: 'yes' },
+  // reel, not readable: tomato sauce with beef and rice; cook uses only clarified butter (ghee), no milk or cream
+  { id: 'rajska', name: 'Rajská', url: 'https://www.instagram.com/reels/CrfPHwKNMkl/', nutrition: n(30, 12, 62), lactose: 'no' },
+  // pork tenderloin with mashed potatoes made lactose-free (ghee, no milk)
+  { id: 'veprova-panenka-s-bramborovou-kasi', name: 'Vepřová panenka s bramborovou kaší', nutrition: n(41, 23, 44), lactose: 'no' },
   // chicken, coconut milk, peanut butter + about 150 g cooked rice as the side
   { id: 'arasidove-curry', name: 'Arašídové curry', nutrition: n(41, 40, 67), lactose: 'no' },
   { id: 'salat-s-pecenou-ryzi-a-lososem', name: 'Salát s pečenou rýží a lososem, okurkou a cottage', nutrition: n(40, 34, 36), lactose: 'yes' },
