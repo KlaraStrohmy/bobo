@@ -1,13 +1,11 @@
-import { StrictMode, useEffect, type ReactNode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   BrowserAuthError,
-  InteractionRequiredAuthError,
-  InteractionStatus,
+  BrowserAuthErrorCodes,
   PublicClientApplication,
   type RedirectRequest,
 } from '@azure/msal-browser';
-import { MsalProvider, useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { registerSW } from 'virtual:pwa-register';
 import { enableDevMode, fetchConfig, setLogoutHandler, setTokenProvider } from './api';
 import { ConfigContext } from './config';
@@ -21,22 +19,6 @@ captureInstallEvents();
 registerSW({ immediate: true });
 
 const root = createRoot(document.getElementById('root')!);
-
-/**
- * Signs in with a plain redirect (no hidden-iframe silent attempt first). The silent attempt
- * times out when third-party cookies are blocked or the redirect URI is not registered, and
- * then the user only saw "timed_out" instead of the Microsoft sign-in page.
- */
-function AuthGate({ request, children }: { request: RedirectRequest; children: ReactNode }) {
-  const { instance, inProgress } = useMsal();
-  const authenticated = useIsAuthenticated();
-  useEffect(() => {
-    if (!authenticated && inProgress === InteractionStatus.None) {
-      instance.loginRedirect(request).catch(() => {});
-    }
-  }, [authenticated, inProgress, instance, request]);
-  return authenticated ? <>{children}</> : <Splash text="Přihlašuji…" />;
-}
 
 function Splash({ text, error }: { text: string; error?: boolean }) {
   return (
@@ -57,17 +39,21 @@ function Splash({ text, error }: { text: string; error?: boolean }) {
   );
 }
 
-/** Guards against a redirect loop: at most one silent-failure redirect per 30 seconds. */
-function redirectedRecently(): boolean {
-  try {
-    const last = Number(sessionStorage.getItem('bobo.authRedirectAt') ?? 0);
-    const now = Date.now();
-    if (now - last < 30_000) return true;
-    sessionStorage.setItem('bobo.authRedirectAt', String(now));
-  } catch {
-    // sessionStorage unavailable: allow the redirect
+/** Thrown once a full-page sign-in redirect has started; the page is about to unload. */
+class RedirectingError extends Error {
+  constructor() {
+    super('Přesměrovávám na přihlášení…');
   }
-  return false;
+}
+
+/**
+ * Whether a failed silent token request can only be fixed by a full-page sign-in.
+ * Besides interaction_required this covers the hidden-iframe renewal timing out (`timed_out`),
+ * which happens once the 24h SPA refresh token expires and the iframe can't reach the
+ * Entra session (e.g. third-party cookies blocked). Only a lost connection is worth a retry instead.
+ */
+function needsRedirect(err: unknown): boolean {
+  return !(err instanceof BrowserAuthError && err.errorCode === BrowserAuthErrorCodes.noNetworkConnectivity);
 }
 
 async function bootstrap(): Promise<void> {
@@ -107,47 +93,44 @@ async function bootstrap(): Promise<void> {
 
   const loginRequest: RedirectRequest = { scopes: [config.apiScope] };
 
-  setTokenProvider(async () => {
+  const acquireToken = async (): Promise<string> => {
     const account = pca.getActiveAccount() ?? pca.getAllAccounts()[0];
     if (!account) {
       await pca.loginRedirect(loginRequest);
-      throw new Error('Přesměrovávám na přihlášení…');
+      throw new RedirectingError();
     }
     try {
       const res = await pca.acquireTokenSilent({ ...loginRequest, account });
       return res.accessToken;
     } catch (err) {
-      // The silent fallback runs in a hidden iframe, which times out when third-party cookies
-      // are blocked (Safari). Any of these means: sign in again with a normal redirect.
-      const needsRedirect =
-        err instanceof InteractionRequiredAuthError ||
-        (err instanceof BrowserAuthError && /timed_out|iframe|monitor_window|empty_window|hash_empty/.test(err.errorCode));
-      if (needsRedirect && !redirectedRecently()) {
+      if (needsRedirect(err)) {
         await pca.acquireTokenRedirect({ ...loginRequest, account });
-        throw new Error('Přesměrovávám na přihlášení…');
+        throw new RedirectingError();
       }
       throw err;
     }
-  });
+  };
+  setTokenProvider(acquireToken);
 
   setLogoutHandler(async () => {
     const account = pca.getActiveAccount() ?? pca.getAllAccounts()[0];
     await pca.logoutRedirect({ account, postLogoutRedirectUri: window.location.origin });
   });
 
+  // Sign in (or renew) before rendering the app; a redirect leaves the splash up until the page unloads.
+  root.render(<Splash text="Přihlašuji…" />);
+  await acquireToken();
+
   root.render(
     <StrictMode>
       <ConfigContext.Provider value={config}>
-        <MsalProvider instance={pca}>
-          <AuthGate request={loginRequest}>
-            <App />
-          </AuthGate>
-        </MsalProvider>
+        <App />
       </ConfigContext.Provider>
     </StrictMode>,
   );
 }
 
 bootstrap().catch((err: unknown) => {
+  if (err instanceof RedirectingError) return;
   root.render(<Splash error text={`Aplikaci se nepodařilo spustit: ${err instanceof Error ? err.message : String(err)}`} />);
 });
