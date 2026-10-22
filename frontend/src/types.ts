@@ -89,6 +89,7 @@ export interface DishVotes {
     votes: number | null;
     nutrition: Nutrition;
     lactose: Lactose;
+    ingredients: string[];
   }[];
 }
 

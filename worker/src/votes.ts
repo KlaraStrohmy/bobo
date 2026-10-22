@@ -42,6 +42,7 @@ export async function votesPayload(db: D1Database, userId: string, now: Date, re
       url: d.url ?? null,
       nutrition: d.nutrition,
       lactose: d.lactose,
+      ingredients: d.ingredients ?? [],
       votes: revealed ? (n.get(d.id) ?? 0) : null,
     })),
   };

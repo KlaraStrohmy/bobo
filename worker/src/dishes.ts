@@ -24,6 +24,8 @@ export interface Dish {
   url?: string;
   nutrition: Nutrition;
   lactose: Lactose;
+  /** Shown when the dish is opened on the voting page; filled in as the cook sends them. */
+  ingredients?: string[];
 }
 
 const n = (protein: number, fat: number, carbs: number, estimated = true): Nutrition => ({ protein, fat, carbs, estimated });
@@ -82,7 +84,14 @@ export const DISHES: readonly Dish[] = [
   { id: 'veprova-panenka-s-bramborovou-kasi', name: 'Vepřová panenka s bramborovou kaší', nutrition: n(41, 23, 44), lactose: 'no' },
   // chicken, coconut milk, peanut butter + about 150 g cooked rice as the side
   { id: 'arasidove-curry', name: 'Arašídové curry', nutrition: n(41, 40, 67), lactose: 'no' },
-  { id: 'salat-s-pecenou-ryzi-a-lososem', name: 'Salát s pečenou rýží a lososem, okurkou a cottage', nutrition: n(40, 34, 36), lactose: 'yes' },
+  {
+    // salmon 120 g, 100 g cottage, 100 g rice, plus (per the cook) avocado and sweet potato: about half an avocado and 100 g baked
+    id: 'salat-s-pecenou-ryzi-a-lososem',
+    name: 'Salát s pečenou rýží a lososem, okurkou a cottage',
+    nutrition: n(42, 44, 65),
+    lactose: 'yes',
+    ingredients: ['losos', 'okurka', 'avokádo', 'batáty', 'cottage', 'pečená rýže', 'chilli'],
+  },
 ];
 
 const IDS = new Set(DISHES.map((d) => d.id));

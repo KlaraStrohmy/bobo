@@ -4119,3 +4119,76 @@ a.dish-name:hover {
   color: inherit;
   text-decoration: underline;
 }
+
+/* ingredients: the dish name (or a small "Přísady" button) unfolds the list */
+.dish-name-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline dotted var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.dish-name-btn svg,
+.ing-toggle svg {
+  flex: none;
+  color: var(--accent-text);
+  transition: transform var(--dur-2) var(--ease);
+}
+.dish-name-btn svg.is-open,
+.ing-toggle svg.is-open {
+  transform: rotate(180deg);
+}
+.ing-toggle {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--accent-text);
+  cursor: pointer;
+}
+.ingredients {
+  padding: 8px 12px;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--saffron-soft);
+  font-size: 13.5px;
+}
+.ingredients b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.ingredients ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ingredients li {
+  padding: 1px 9px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-weight: 700;
+}
+/* the chevron sits in front of the name, so it can never wrap onto a line of its own */
+.dish-name-btn {
+  display: block;
+}
+.dish-name-btn svg {
+  display: inline;
+  margin-right: 5px;
+  vertical-align: -2px;
+}

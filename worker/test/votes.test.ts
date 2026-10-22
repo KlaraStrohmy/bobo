@@ -15,6 +15,7 @@ interface Payload {
     url: string | null;
     votes: number | null;
     lactose: string;
+    ingredients: string[];
     nutrition: { protein: number; fat: number; carbs: number; estimated: boolean };
   }[];
 }
@@ -56,6 +57,9 @@ describe('votes', () => {
     expect(byId.get('pecene-testoviny-s-tunakem')?.nutrition).toEqual({ protein: 31, fat: 11, carbs: 60, estimated: false });
     expect(byId.get('kure-na-paprice')?.nutrition.estimated).toBe(true);
     expect(byId.get('koprovka')?.lactose).toBe('yes');
+    // ingredients are an array for every dish; the cook fills them in one recipe at a time
+    for (const d of s.dishes) expect(Array.isArray(d.ingredients), d.name).toBe(true);
+    expect(byId.get('salat-s-pecenou-ryzi-a-lososem')?.ingredients).toEqual(['losos', 'okurka', 'avokádo', 'batáty', 'cottage', 'pečená rýže', 'chilli']);
     expect(byId.get('rajska')?.lactose).toBe('no'); // ghee only
     expect(byId.get('veprova-panenka-s-bramborovou-kasi')?.lactose).toBe('no'); // lactose-free mash
     expect(byId.get('arasidove-curry')?.lactose).toBe('no');

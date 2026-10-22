@@ -193,6 +193,13 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
   const [data, setData] = useState<DishVotes | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set()); // dishes whose ingredients are unfolded
+  const toggleOpen = (id: string) =>
+    setOpenIds((cur) => {
+      const next = new Set(cur);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
   const [barkId, setBarkId] = useState<string | null>(null);
   const [paws, setPaws] = useState(false);
   const endPaws = useCallback(() => setPaws(false), []);
@@ -295,10 +302,31 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
                     {d.name}
                     <Icon name="externalLink" size={13} strokeWidth={2.4} />
                   </a>
+                ) : d.ingredients.length > 0 ? (
+                  <button type="button" className="dish-name dish-name-btn" aria-expanded={openIds.has(id)} aria-controls={`ing-${id}`} onClick={() => toggleOpen(id)}>
+                    <Icon name="chevronDown" size={14} strokeWidth={2.6} className={openIds.has(id) ? 'is-open' : ''} />
+                    {d.name}
+                  </button>
                 ) : (
                   <span className="dish-name">{d.name}</span>
                 )}
                 <Facts nutrition={d.nutrition} lactose={d.lactose} />
+                {d.url && d.ingredients.length > 0 && (
+                  <button type="button" className="ing-toggle" aria-expanded={openIds.has(id)} aria-controls={`ing-${id}`} onClick={() => toggleOpen(id)}>
+                    Přísady
+                    <Icon name="chevronDown" size={13} strokeWidth={2.6} className={openIds.has(id) ? 'is-open' : ''} />
+                  </button>
+                )}
+                {openIds.has(id) && d.ingredients.length > 0 && (
+                  <div className="ingredients" id={`ing-${id}`}>
+                    <b>Přísady</b>
+                    <ul>
+                      {d.ingredients.map((x) => (
+                        <li key={x}>{x}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {d.votes !== null && (
                   <span className="dish-count" aria-label={`Hlasů: ${d.votes}`}>
                     <span className="dish-bar" aria-hidden>
