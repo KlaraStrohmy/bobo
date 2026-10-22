@@ -89,7 +89,7 @@ export interface DishVotes {
     votes: number | null;
     nutrition: Nutrition;
     lactose: Lactose;
-    ingredients: string[];
+    ingredients: IngredientGroup[];
   }[];
 }
 
@@ -110,3 +110,9 @@ export interface Nutrition {
 
 /** yes = milk, cream, yogurt or fresh cheese; trace = only aged cheese such as parmesan. */
 export type Lactose = 'yes' | 'trace' | 'no';
+
+/** The main list has no title; extra groups such as "Na salát" have one. */
+export interface IngredientGroup {
+  title: string | null;
+  items: string[];
+}

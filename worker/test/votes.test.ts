@@ -15,7 +15,7 @@ interface Payload {
     url: string | null;
     votes: number | null;
     lactose: string;
-    ingredients: string[];
+    ingredients: { title: string | null; items: string[] }[];
     nutrition: { protein: number; fat: number; carbs: number; estimated: boolean };
   }[];
 }
@@ -59,11 +59,18 @@ describe('votes', () => {
     expect(byId.get('koprovka')?.lactose).toBe('yes');
     // ingredients are an array for every dish; the cook fills them in one recipe at a time
     for (const d of s.dishes) expect(Array.isArray(d.ingredients), d.name).toBe(true);
-    expect(byId.get('salat-s-pecenou-ryzi-a-lososem')?.ingredients).toEqual(['losos', 'okurka', 'avokádo', 'batáty', 'cottage', 'pečená rýže', 'chilli']);
+    expect(byId.get('salat-s-pecenou-ryzi-a-lososem')?.ingredients).toEqual([
+      { title: null, items: ['losos', 'okurka', 'avokádo', 'batáty', 'cottage', 'pečená rýže', 'chilli'] },
+    ]);
+    // a dish can have more groups: the pork has its own carrot salad
+    const pork = byId.get('vepr-na-karamelu')?.ingredients ?? [];
+    expect(pork.map((g) => g.title)).toEqual([null, 'Na salát']);
+    expect(pork[0].items).toContain('krkovice');
+    expect(pork[1].items).toContain('sezamový olej');
     expect(byId.get('rajska')?.lactose).toBe('no'); // ghee only
     expect(byId.get('veprova-panenka-s-bramborovou-kasi')?.lactose).toBe('no'); // lactose-free mash
     expect(byId.get('arasidove-curry')?.lactose).toBe('no');
-    expect(byId.get('arasidove-curry')?.ingredients).toContain('brambory');
+    expect(byId.get('arasidove-curry')?.ingredients[0].items).toContain('brambory');
   });
 
   it('gives everybody 4 votes a week, whatever the cooking days are', async () => {

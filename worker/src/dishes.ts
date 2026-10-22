@@ -18,6 +18,12 @@ export interface Nutrition {
   estimated: boolean;
 }
 
+/** Ingredients can be split, e.g. the main dish and "Na salát". A group without a title is the main list. */
+export interface IngredientGroup {
+  title?: string;
+  items: string[];
+}
+
 export interface Dish {
   id: string;
   name: string;
@@ -25,7 +31,7 @@ export interface Dish {
   nutrition: Nutrition;
   lactose: Lactose;
   /** Shown when the dish is opened on the voting page; filled in as the cook sends them. */
-  ingredients?: string[];
+  ingredients?: IngredientGroup[];
 }
 
 const n = (protein: number, fat: number, carbs: number, estimated = true): Nutrition => ({ protein, fat, carbs, estimated });
@@ -35,8 +41,17 @@ export const DISHES: readonly Dish[] = [
   { id: 'kure-na-citronech', name: 'Kuře na citronech', url: 'https://www.instagram.com/reels/CxruyHbMUfr/', nutrition: n(38, 26, 6), lactose: 'no' },
   // calculated from the recipe's ingredients for 4 portions (800 g chicken, 600 ml cream, 80 g butter made as ghee, bacon, žervé)
   { id: 'kure-na-paprice', name: 'Kuře na paprice', url: 'https://www.rohlik.cz/chef/21-kure-na-paprice', nutrition: n(58, 98, 17), lactose: 'yes' },
-  // pork shoulder with caramel sauce + about 150 g cooked rice as the side
-  { id: 'vepr-na-karamelu', name: 'Vepř na karamelu', nutrition: n(36, 26, 64), lactose: 'no' },
+  {
+    // pork neck 150 g cooked with caramel (20 g sugar), 1 egg, 10 g coconut chips, 150 g rice, plus a carrot salad with 10 ml oil
+    id: 'vepr-na-karamelu',
+    name: 'Vepř na karamelu',
+    nutrition: n(44, 47, 79),
+    lactose: 'no',
+    ingredients: [
+      { items: ['krkovice', 'vejce', 'rybí omáčka', 'cukr', 'kokosové chipsy'] },
+      { title: 'Na salát', items: ['mrkev', 'citrón', 'koriandr', 'olivový olej', 'sezamový olej', 'sůl', 'pepř'] },
+    ],
+  },
   { id: 'pecene-kure-s-bramborem-a-mrkvi', name: 'Pečené kuře s bramborem a mrkví', nutrition: n(38, 30, 42), lactose: 'no' },
   // reel, not readable: pork braised on carrots (no dairy assumed) + about 200 g boiled potatoes as the side
   { id: 'veprove-na-mrkvi', name: 'Vepřové na mrkvi', url: 'https://www.instagram.com/reels/DErOIpdsTxt/', nutrition: n(34, 18, 48), lactose: 'no' },
@@ -74,8 +89,14 @@ export const DISHES: readonly Dish[] = [
   },
   // shrimp, mango, dressing + about 50 g dry rice noodles
   { id: 'mango-salat-s-krevetami', name: 'Mango salát s krevetami', nutrition: n(30, 16, 70), lactose: 'no' },
-  // pasta with roasted pepper sauce and about half a burrata (60 g) per portion; burrata is cream-filled, so lactose
-  { id: 'testoviny-s-omackou-z-pecenych-paprik', name: 'Těstoviny s omáčkou z pečených paprik', nutrition: n(22, 37, 83), lactose: 'yes' },
+  {
+    // pasta, roasted peppers (roasted in about 1 tbsp olive oil, not in the cook's list) and about half a burrata (60 g); burrata is cream-filled, so lactose
+    id: 'testoviny-s-omackou-z-pecenych-paprik',
+    name: 'Těstoviny s omáčkou z pečených paprik',
+    nutrition: n(22, 37, 83),
+    lactose: 'yes',
+    ingredients: [{ items: ['červené papriky', 'burrata', 'bazalka', 'těstoviny'] }],
+  },
   // reel, not readable: classic dill sauce with eggs and potatoes (milk, cream)
   { id: 'koprovka', name: 'Koprovka', url: 'https://www.instagram.com/reels/Cy7l6q3s38h/', nutrition: n(24, 32, 60), lactose: 'yes' },
   // reel, not readable: tomato sauce with beef and rice; cook uses only clarified butter (ghee), no milk or cream
@@ -88,7 +109,7 @@ export const DISHES: readonly Dish[] = [
     name: 'Arašídové curry',
     nutrition: n(44, 40, 93),
     lactose: 'no',
-    ingredients: ['červené curry', 'kuřecí maso', 'kokosové mléko', 'arašídové máslo', 'mrkev', 'brambory', 'červená paprika', 'limetka', 'rýže'],
+    ingredients: [{ items: ['červené curry', 'kuřecí maso', 'kokosové mléko', 'arašídové máslo', 'mrkev', 'brambory', 'červená paprika', 'limetka', 'rýže'] }],
   },
   {
     // salmon 120 g, 100 g cottage, 100 g rice, plus (per the cook) avocado and sweet potato: about half an avocado and 100 g baked
@@ -96,7 +117,7 @@ export const DISHES: readonly Dish[] = [
     name: 'Salát s pečenou rýží a lososem, okurkou a cottage',
     nutrition: n(42, 44, 65),
     lactose: 'yes',
-    ingredients: ['losos', 'okurka', 'avokádo', 'batáty', 'cottage', 'pečená rýže', 'chilli'],
+    ingredients: [{ items: ['losos', 'okurka', 'avokádo', 'batáty', 'cottage', 'pečená rýže', 'chilli'] }],
   },
 ];
 

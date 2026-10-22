@@ -319,12 +319,16 @@ export default function VotePage({ me, onBack }: { me: Me; onBack: () => void })
                 )}
                 {openIds.has(id) && d.ingredients.length > 0 && (
                   <div className="ingredients" id={`ing-${id}`}>
-                    <b>Přísady</b>
-                    <ul>
-                      {d.ingredients.map((x) => (
-                        <li key={x}>{x}</li>
-                      ))}
-                    </ul>
+                    {d.ingredients.map((g, gi) => (
+                      <div key={g.title ?? gi} className="ing-group">
+                        <b>{g.title ?? 'Přísady'}</b>
+                        <ul>
+                          {g.items.map((x) => (
+                            <li key={x}>{x}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
                 )}
                 {d.votes !== null && (

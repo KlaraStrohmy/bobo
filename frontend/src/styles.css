@@ -4192,3 +4192,10 @@ a.dish-name:hover {
   margin-right: 5px;
   vertical-align: -2px;
 }
+.ingredients {
+  display: grid;
+  gap: 10px;
+}
+.ingredients .ing-group b {
+  margin-bottom: 4px;
+}
