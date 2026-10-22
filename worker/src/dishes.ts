@@ -82,8 +82,14 @@ export const DISHES: readonly Dish[] = [
   { id: 'rajska', name: 'Rajská', url: 'https://www.instagram.com/reels/CrfPHwKNMkl/', nutrition: n(30, 12, 62), lactose: 'no' },
   // pork tenderloin with mashed potatoes made lactose-free (ghee, no milk)
   { id: 'veprova-panenka-s-bramborovou-kasi', name: 'Vepřová panenka s bramborovou kaší', nutrition: n(41, 23, 44), lactose: 'no' },
-  // chicken, coconut milk, peanut butter + about 150 g cooked rice as the side
-  { id: 'arasidove-curry', name: 'Arašídové curry', nutrition: n(41, 40, 67), lactose: 'no' },
+  {
+    // chicken 120 g, coconut milk, peanut butter, carrot, red pepper, about 150 g boiled potatoes and 150 g cooked rice
+    id: 'arasidove-curry',
+    name: 'Arašídové curry',
+    nutrition: n(44, 40, 93),
+    lactose: 'no',
+    ingredients: ['červené curry', 'kuřecí maso', 'kokosové mléko', 'arašídové máslo', 'mrkev', 'brambory', 'červená paprika', 'limetka', 'rýže'],
+  },
   {
     // salmon 120 g, 100 g cottage, 100 g rice, plus (per the cook) avocado and sweet potato: about half an avocado and 100 g baked
     id: 'salat-s-pecenou-ryzi-a-lososem',

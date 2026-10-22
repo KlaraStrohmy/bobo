@@ -63,6 +63,7 @@ describe('votes', () => {
     expect(byId.get('rajska')?.lactose).toBe('no'); // ghee only
     expect(byId.get('veprova-panenka-s-bramborovou-kasi')?.lactose).toBe('no'); // lactose-free mash
     expect(byId.get('arasidove-curry')?.lactose).toBe('no');
+    expect(byId.get('arasidove-curry')?.ingredients).toContain('brambory');
   });
 
   it('gives everybody 4 votes a week, whatever the cooking days are', async () => {
