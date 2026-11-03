@@ -27,6 +27,7 @@ export interface UserRow {
   active: number;
   reminder_enabled: number;
   reminder_time: string;
+  vote_reminder_enabled: number;
   created_at: string;
   last_seen_at: string | null;
 }

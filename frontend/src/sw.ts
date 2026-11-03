@@ -19,6 +19,8 @@ interface PushPayload {
   date?: string;
   token?: string;
   url?: string;
+  /** Notifications with the same tag replace each other; the server sets it for non-lunch pushes. */
+  tag?: string;
 }
 
 interface NotificationData {
@@ -58,7 +60,7 @@ self.addEventListener('push', (event) => {
     body: payload.body ?? '',
     icon: ICON,
     badge: BADGE,
-    tag: payload.date ? `bobo-${payload.date}` : 'bobo',
+    tag: payload.tag ?? (payload.date ? `bobo-${payload.date}` : 'bobo'),
     data,
     actions: payload.token
       ? [

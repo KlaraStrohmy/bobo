@@ -26,10 +26,11 @@ Postup je na obrázku `navod-notifikace.png`. Notifikace se nastavují v **Nasta
 1. Klepni na ikonku **Nastavení** (vpravo nahoře).
 2. V sekci **Denní připomínka** zapni **Připomínat oběd**.
 3. Nastav **Čas připomínky**. Musí být před uzávěrkou přihlášek, výchozí je 15:00.
-4. V sekci **Notifikace na tomto zařízení** klepni na **Povolit notifikace** a v okně telefonu potvrď **Povolit**.
+4. V sekci **Připomínka hlasování** nech zapnuté **Připomínat hlasování** (je zapnuté od začátku).
+5. V sekci **Notifikace na tomto zařízení** klepni na **Povolit notifikace** a v okně telefonu potvrď **Povolit**.
 
 Notifikace se zapínají zvlášť na každém zařízení. Na iPhonu fungují jen v aplikaci přidané na plochu (iOS 16.4 nebo novější).
 
-Připomínka přijde den před obědem, pokud se zítra vaří a ještě jsi neodpověděl(a). Odpovědět jde přímo z notifikace.
+**Připomínka přihlášení na oběd** přijde den před obědem, pokud se zítra vaří a ještě jsi neodpověděl(a). Odpovědět jde přímo z notifikace.
 
-> Připomínka se týká **přihlášení na oběd**. Na hlasování o jídlech zatím žádná připomínka není.
+**Připomínka hlasování** přijde každé pondělí mezi 9. a 18. hodinou jen tomu, kdo ještě nehlasoval. Klepnutím se otevře stránka Hlasuj!.

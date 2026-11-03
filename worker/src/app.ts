@@ -120,6 +120,7 @@ async function meJson(env: Env, user: UserRow) {
     isAdmin: isAdmin(user, env),
     reminderEnabled: user.reminder_enabled === 1,
     reminderTime: user.reminder_time,
+    voteReminderEnabled: user.vote_reminder_enabled === 1,
     pushSubscribed: sub !== null,
     reminderDeadline: reminderDeadline(cs),
     remindersPossible: cs.cutoffDaysBefore <= 1,
@@ -218,6 +219,14 @@ export function createApp(options: AppOptions = {}) {
     }
     const user = await c.env.DB.prepare('UPDATE users SET reminder_enabled = ?1, reminder_time = ?2 WHERE id = ?3 RETURNING *')
       .bind(enabled ? 1 : 0, time, c.get('user').id)
+      .first<UserRow>();
+    return c.json(await meJson(c.env, user!));
+  });
+
+  app.put('/me/vote-reminder', async (c) => {
+    const enabled = field(await jsonBody(c), 'enabled', isBool, 'boolean');
+    const user = await c.env.DB.prepare('UPDATE users SET vote_reminder_enabled = ?1 WHERE id = ?2 RETURNING *')
+      .bind(enabled ? 1 : 0, c.get('user').id)
       .first<UserRow>();
     return c.json(await meJson(c.env, user!));
   });

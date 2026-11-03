@@ -17,6 +17,7 @@ export function as(email: string): Record<string, string> {
 export async function resetDb(): Promise<void> {
   const db = env.DB;
   await db.batch([
+    db.prepare('DELETE FROM vote_reminder_log'),
     db.prepare('DELETE FROM dish_votes'),
     db.prepare('DELETE FROM day_dishes'),
     db.prepare('DELETE FROM reminder_log'),

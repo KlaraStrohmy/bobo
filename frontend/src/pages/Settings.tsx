@@ -31,6 +31,7 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
   const { vapidPublicKey } = useConfig();
   const [time, setTime] = useState(me.reminderTime);
   const [saving, setSaving] = useState(false);
+  const [savingVote, setSavingVote] = useState(false);
   const [sub, setSub] = useState<SubState>('unknown');
   const [pushBusy, setPushBusy] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(
@@ -73,6 +74,18 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
   useEffect(() => {
     void refreshSub();
   }, []);
+
+  const setVoteReminder = async (enabled: boolean) => {
+    setSavingVote(true);
+    try {
+      onMeChange(await api<Me>('/me/vote-reminder', { method: 'PUT', body: { enabled } }));
+      toast(enabled ? 'Připomínka hlasování zapnuta' : 'Připomínka hlasování vypnuta', 'ok');
+    } catch (e) {
+      toast(errorMessage(e), 'error');
+    } finally {
+      setSavingVote(false);
+    }
+  };
 
   /** `checkTime`: validate against the deadline (always when enabling or editing the time). */
   const savePrefs = async (reminderEnabled: boolean, reminderTime: string, checkTime = reminderEnabled) => {
@@ -251,6 +264,30 @@ export default function SettingsPage({ me, onMeChange }: { me: Me; onMeChange: (
             </>
           )}
         </p>
+      )}
+
+      <h2 className="group-label">Připomínka hlasování</h2>
+      <section className="card group">
+        <div className="row">
+          <span className="row-icon tone-accent">
+            <Icon name="sparkle" size={18} />
+          </span>
+          <div className="row-text">
+            <span className="row-title">Připomínat hlasování</span>
+            <span className="row-sub">V pondělí dopoledne, pokud jsi ještě nehlasoval(a).</span>
+          </div>
+          <Toggle
+            label="Připomínat hlasování"
+            name="vote-reminder-enabled"
+            hideLabel
+            checked={me.voteReminderEnabled !== false}
+            disabled={savingVote}
+            onChange={setVoteReminder}
+          />
+        </div>
+      </section>
+      {me.voteReminderEnabled !== false && sub === 'none' && (
+        <Callout>Připomínka hlasování je zapnutá, ale toto zařízení nemá povolené notifikace — nic ti sem nepřijde.</Callout>
       )}
 
       {iosNeedsInstall && installSection}

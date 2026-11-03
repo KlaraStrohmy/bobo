@@ -12,6 +12,8 @@ export interface Me {
   isAdmin: boolean;
   reminderEnabled: boolean;
   reminderTime: string;
+  /** Monday push reminder to vote for next week's dishes (only for people who have not voted yet). */
+  voteReminderEnabled: boolean;
   pushSubscribed: boolean;
   /** The reminder time must be strictly before this HH:MM (null = any time works). */
   reminderDeadline: string | null;

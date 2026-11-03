@@ -2,12 +2,14 @@
 import { createApp } from './app';
 import type { Env } from './env';
 import { reminderJob } from './reminders';
+import { voteReminderJob } from './voteReminders';
 
 const app = createApp();
 
 export default {
   fetch: app.fetch,
   scheduled(controller, env, ctx) {
-    ctx.waitUntil(reminderJob(env, new Date(controller.scheduledTime)));
+    const now = new Date(controller.scheduledTime);
+    ctx.waitUntil(Promise.all([reminderJob(env, now), voteReminderJob(env, now)]));
   },
 } satisfies ExportedHandler<Env>;

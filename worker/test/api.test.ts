@@ -40,6 +40,7 @@ describe('API', () => {
       isAdmin: false,
       reminderEnabled: false,
       reminderTime: '15:00',
+      voteReminderEnabled: true,
       pushSubscribed: false,
       reminderDeadline: '16:00',
       remindersPossible: true,
