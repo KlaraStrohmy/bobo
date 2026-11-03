@@ -25,7 +25,7 @@ Postup je na obrázku `navod-notifikace.png`. Notifikace se nastavují v **Nasta
 
 1. Klepni na ikonku **Nastavení** (vpravo nahoře).
 2. V sekci **Denní připomínka** zapni **Připomínat oběd**.
-3. Nastav **Čas připomínky**. Musí být před uzávěrkou přihlášek, výchozí je 15:00.
+3. Nastav **Čas připomínky**. Musí být před uzávěrkou přihlášek, nastav třeba 14:00.
 4. V sekci **Připomínka hlasování** nech zapnuté **Připomínat hlasování** (je zapnuté od začátku).
 5. V sekci **Notifikace na tomto zařízení** klepni na **Povolit notifikace** a v okně telefonu potvrď **Povolit**.
 

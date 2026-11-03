@@ -67,7 +67,7 @@ svg += t(card1.x + 24, card1.y + 184, 'Kdy ti přijde notifikace.', 21, { fill: 
 // toggle (on)
 svg += `<rect x="${toggle.x}" y="${toggle.y}" width="${toggle.w}" height="${toggle.h}" rx="20" fill="${GREEN}" stroke="${INK}" stroke-width="3.5"/><circle cx="${toggle.x + toggle.w - 21}" cy="${toggle.y + 20}" r="14" fill="#fff" stroke="${INK}" stroke-width="3"/>`;
 // time box
-svg += `<rect x="${timeBox.x}" y="${timeBox.y}" width="${timeBox.w}" height="${timeBox.h}" rx="14" fill="#fff" stroke="${INK}" stroke-width="3"/>` + t(timeBox.x + timeBox.w / 2, timeBox.y + 33, '15:00', 25, { font: FONT, anchor: 'middle' });
+svg += `<rect x="${timeBox.x}" y="${timeBox.y}" width="${timeBox.w}" height="${timeBox.h}" rx="14" fill="#fff" stroke="${INK}" stroke-width="3"/>` + t(timeBox.x + timeBox.w / 2, timeBox.y + 33, '14:00', 25, { font: FONT, anchor: 'middle' });
 
 // section 2
 svg += t(SX + 24, SY + 482 - 0, 'PŘIPOMÍNKA HLASOVÁNÍ', 21, { font: FONT, fill: GREY, ls: 1.5 });
@@ -97,7 +97,7 @@ const LX = 600, LW = 410;
 const steps = [
   { n: 1, y: 300, target: [scx + 22, scy - 26], title: 'Klepni na ikonku nastavení', lines: ['Tři posuvníky vpravo nahoře', 'v horní liště aplikace.'] },
   { n: 2, y: 470, target: [toggle.x + toggle.w + 8, toggle.y + 20], title: 'Zapni „Připomínat oběd“', lines: ['Den před obědem ti přijde', 'notifikace s otázkou na zítřek.'] },
-  { n: 3, y: 640, target: [timeBox.x + timeBox.w + 8, timeBox.y + 24], title: 'Nastav čas připomínky', lines: ['Musí být před uzávěrkou', 'přihlášek. Výchozí je 15:00.'] },
+  { n: 3, y: 640, target: [timeBox.x + timeBox.w + 8, timeBox.y + 24], title: 'Nastav čas připomínky', lines: ['Musí být před uzávěrkou', 'přihlášek. Nastav třeba 14:00.'] },
   { n: 4, y: 810, target: [voteToggle.x + voteToggle.w + 8, voteToggle.y + 20], title: 'Zapni „Připomínat hlasování“', lines: ['V pondělí dopoledne přijde', '„Hlasuj!“, když jsi ještě nehlasoval.'] },
   { n: 5, y: 980, target: [btn.x + btn.w + 10, btn.y + 35], title: 'Klepni na „Povolit notifikace“', lines: ['Telefon se zeptá, potvrď „Povolit“.', 'Zapíná se zvlášť na každém', 'zařízení (telefon, počítač).'] },
 ];

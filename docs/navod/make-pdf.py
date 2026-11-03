@@ -292,10 +292,10 @@ def notification_cards():
     # lunch reminder
     rr(d, 0, 10, W / 2 - 8, 128, 16, WHITE, INK, 2)
     rr(d, 12, 104, 26, 26, 7, YELLOW, INK, 1.4)
-    text(d, 48, 118, 'BOBO · 15:00', 8.5, True, GREY)
+    text(d, 48, 118, 'BOBO · 14:00', 8.5, True, GREY)
     text(d, 12, 90, 'Oběd v úterý 4. 11.?', 12.5, True)
     text(d, 12, 74, 'Zítra se vaří – budeš obědvat?', 9.5)
-    text(d, 12, 61, 'Odpověz do 16:00.', 9.5)
+    text(d, 12, 61, 'Odpověz do 15:00.', 9.5)
     rr(d, 12, 20, 76, 26, 13, GREEN_SOFT, GREEN, 1.6)
     text(d, 50, 28, 'Ano', 11, True, INK, 'middle')
     rr(d, 96, 20, 76, 26, 13, CORAL_SOFT, CORAL, 1.6)
@@ -458,13 +458,13 @@ S += [P('V počítači není instalace nutná, Bobo funguje i jako záložka. Po
 S += section_title('Krok 3', 'Notifikace: co přijde a kdy')
 S += [P('Notifikace jsou krátké zprávy, které se objeví na obrazovce telefonu, i když Bobo zrovna nemáš otevřené. Bobo posílá dva druhy a každý si můžeš zapnout, nebo vypnout zvlášť.'), Spacer(1, 4), notification_cards(), Spacer(1, 10)]
 table = Table([[P('<b>Druh</b>', body), P('<b>Kdy přijde</b>', body), P('<b>K čemu je</b>', body)],
-               [P('<b>Připomínka oběda</b>', body), P('Den před obědem v čase, který si nastavíš (výchozí 15:00), jen když se zítra vaří a ještě jsi neodpověděl(a).', body), P('Řekneš Ano, nebo Ne přímo z notifikace, aplikace se nemusí otevírat.', body)],
+               [P('<b>Připomínka oběda</b>', body), P('Den před obědem v čase, který si nastavíš (např. 14:00), jen když se zítra vaří a ještě jsi neodpověděl(a).', body), P('Řekneš Ano, nebo Ne přímo z notifikace, aplikace se nemusí otevírat.', body)],
                [P('<b>Připomínka hlasování</b>', body), P('Každé pondělí mezi 9:00 a 18:00, jen když jsi ještě v tom týdnu nehlasoval(a).', body), P('Otevře stránku Hlasuj!, kde rozdáš své 4 hlasy.', body)]],
               colWidths=[132, CW * 0.40, CW - 132 - CW * 0.40])
 table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), YELLOW), ('BACKGROUND', (0, 1), (-1, -1), WHITE), ('GRID', (0, 0), (-1, -1), 1.6, INK), ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                            ('LEFTPADDING', (0, 0), (-1, -1), 8), ('RIGHTPADDING', (0, 0), (-1, -1), 8), ('TOPPADDING', (0, 0), (-1, -1), 8), ('BOTTOMPADDING', (0, 0), (-1, -1), 2)]))
 S += [table, Spacer(1, 12),
-      box('info', 'Čas připomínky oběda musí být před uzávěrkou', 'Přihlašovat se na oběd jde obvykle <b>do 16:00 den předem</b>. Připomínka proto musí přijít dřív, výchozí čas je 15:00. Aplikace ti nedovolí nastavit čas po uzávěrce.'),
+      box('info', 'Čas připomínky oběda musí být před uzávěrkou', 'Přihlašovat se na oběd jde <b>do 15:00 den předem</b>. Připomínka proto musí přijít dřív, nastav třeba 14:00. Aplikace ti nedovolí nastavit čas po uzávěrce.'),
       box('tip', 'Notifikace se zapínají zvlášť na každém zařízení', 'Když používáš Bobo v telefonu i v počítači, zapni si notifikace na obou. Každé zařízení si pamatuje své nastavení.'),
       PageBreak()]
 
@@ -478,7 +478,7 @@ S += section_title('Krok 3 · iPhone', 'Zapnutí notifikací na iPhonu')
 S += [P('Na iPhonu je potřeba, aby Bobo <b>už bylo přidané na ploše</b> (krok 2) a abys ho otevřela z ikonky. Jinak telefon notifikace nepovolí.'), Spacer(1, 6),
       step(1, 'Otevři Bobo z ikonky na ploše', 'Ne ze Safari. Aplikace se otevře na celou obrazovku.'),
       step(2, 'Klepni na ikonku Nastavení', 'Najdeš ji <b>vpravo nahoře</b> v horní liště, má podobu <b>tří posuvníků</b> (vedle kolečka s tvými iniciály).'),
-      step(3, 'Zapni „Připomínat oběd“', 'V sekci <b>Denní připomínka</b> přepni <b>Připomínat oběd</b>. Pod ním můžeš nastavit <b>Čas připomínky</b> (musí být před uzávěrkou, výchozí je 15:00).'),
+      step(3, 'Zapni „Připomínat oběd“', 'V sekci <b>Denní připomínka</b> přepni <b>Připomínat oběd</b>. Pod ním můžeš nastavit <b>Čas připomínky</b> (musí být před uzávěrkou, nastav třeba 14:00).'),
       step(4, 'Nech zapnuté „Připomínat hlasování“', 'V sekci <b>Připomínka hlasování</b> je přepínač <b>Připomínat hlasování</b>. Je zapnutý od začátku. Chceš-li pondělní připomínku vypnout, přepni ho.'),
       step(5, 'Klepni na „Povolit notifikace“', 'V sekci <b>Notifikace na tomto zařízení</b> klepni na fialové tlačítko <b>Povolit notifikace</b>. iPhone se zeptá, jestli aplikaci Bobo povolit oznámení, klepni na <b>Povolit</b>.'),
       step(6, 'Ověř, že to funguje', 'Stav v sekci se změní na „Notifikace jsou zapnuté“. Tlačítkem pro test můžeš notifikaci poslat hned (je-li zobrazené).'),
@@ -490,7 +490,7 @@ S += [P('Na iPhonu je potřeba, aby Bobo <b>už bylo přidané na ploše</b> (kr
 S += section_title('Krok 3 · Android a počítač', 'Zapnutí notifikací na Androidu a v počítači')
 S += [P('Android', h2),
       step(1, 'Otevři Bobo a klepni na Nastavení', 'Ikonka se třemi posuvníky je vpravo nahoře.'),
-      step(2, 'Zapni „Připomínat oběd“ a nastav čas', 'V sekci <b>Denní připomínka</b>. Čas musí být před uzávěrkou (výchozí 15:00).'),
+      step(2, 'Zapni „Připomínat oběd“ a nastav čas', 'V sekci <b>Denní připomínka</b>. Čas musí být před uzávěrkou (např. 14:00).'),
       step(3, 'Zkontroluj „Připomínat hlasování“', 'V sekci <b>Připomínka hlasování</b> je přepínač zapnutý od začátku.'),
       step(4, 'Klepni na „Povolit notifikace“', 'V sekci <b>Notifikace na tomto zařízení</b>. Telefon se zeptá, klepni na <b>Povolit</b>.'),
       box('warn', 'Notifikace jsi zamítla?', 'Podrž ikonku Bobo → <b>Informace o aplikaci</b> → <b>Oznámení</b> a zapni je. V Chromu to jde přes menu tří teček → Nastavení → Nastavení webu → Oznámení.'),
@@ -504,7 +504,7 @@ S += [P('Android', h2),
 # ===== 12: using Bobo =====
 S += section_title('Jak se Bobo používá', 'Oběd, hlasování a pár drobností')
 S += [P('Přihlášení na oběd', h2), P('Každý den, kdy se vaří, má řádek s <b>kuřetem na dráze</b>. Kuře přetáhni prstem, nebo klepni na stranu dráhy:'), switch_diagram(), Spacer(1, 4),
-      P('•  <b>doleva</b> = Ano, jdeš na oběd,'), P('•  <b>doprava</b> = Ne, nejdeš,'), P('•  <b>doprostřed</b> = zatím jsi neodpověděl(a). Odpověď jde změnit do uzávěrky, obvykle do 16:00 den předem.'),
+      P('•  <b>doleva</b> = Ano, jdeš na oběd,'), P('•  <b>doprava</b> = Ne, nejdeš,'), P('•  <b>doprostřed</b> = zatím jsi neodpověděl(a). Odpověď jde změnit do uzávěrky, do 15:00 den předem.'),
       P('Hlasování o jídlech', h2),
       P('Klepni na velké fialové tlačítko <b>Hlasuj!</b> s miskou ramenu (pod řádkem „Rychle vyplnit“). Otevře se seznam jídel.'),
       P('•  Máš <b>4 hlasy</b> na týden. Hlas dáš tak, že <b>přetáhneš hlavu pejska doprava</b>. Zpět doleva ho vezmeš zpátky.'),
@@ -527,7 +527,7 @@ faq = [
     ('Vidím starou verzi, chybí mi novinky',
      'Aplikaci úplně zavři (přejetím v seznamu aplikací) a otevři znovu. Pomůže i vypnout a zapnout internet. Nová verze se načte při dalším otevření.'),
     ('Nemůžu se přihlásit na oběd, kuře se vrací zpátky',
-     'Nejspíš už uplynula uzávěrka (obvykle 16:00 den před obědem). Zeptej se správců, zda může změnit odpověď za tebe.'),
+     'Nejspíš už uplynula uzávěrka (15:00 den před obědem). Zeptej se správců, zda může změnit odpověď za tebe.'),
     ('Pejsek při hlasování nezaštěká',
      'Zvuk se přehraje až po klepnutí a potřebuje zapnutou hlasitost. Pes štěká po druhém hlasu a také když ho na chvíli podržíš prstem.'),
     ('Jak aplikaci odstraním?',
@@ -547,7 +547,7 @@ cs = [[P('<b>Odkaz</b>', body), P(link(), ParagraphStyle('cl', parent=body, font
       [P('<b>Android</b><br/>instalace', body), P('Chrome → menu tří teček → <b>Instalovat aplikaci</b> → Instalovat.', body)],
       [P('<b>Počítač</b><br/>instalace', body), P('Chrome / Edge: ikonka instalace v adresním řádku vpravo → Nainstalovat. Safari: Soubor → Přidat do Docku.', body)],
       [P('<b>Notifikace</b>', body), P('Bobo → ikonka <b>Nastavení</b> (3 posuvníky vpravo nahoře) → <b>Připomínat oběd</b> → <b>Čas připomínky</b> → <b>Připomínat hlasování</b> → <b>Povolit notifikace</b> → Povolit.', body)],
-      [P('<b>Oběd</b>', body), P('Kuře doleva = <b>Ano</b>, doprava = <b>Ne</b>. Odpovídá se obvykle do 16:00 den předem.', body)],
+      [P('<b>Oběd</b>', body), P('Kuře doleva = <b>Ano</b>, doprava = <b>Ne</b>. Odpovídá se do 15:00 den předem.', body)],
       [P('<b>Hlasování</b>', body), P('Tlačítko <b>Hlasuj!</b> → přetáhni pejska doprava (4 hlasy za týden). Každý pátek je burrito.', body)]]
 ct = Table(cs, colWidths=[110, CW - 110])
 ct.setStyle(TableStyle([('BACKGROUND', (0, 0), (0, -1), YELLOW), ('BACKGROUND', (1, 0), (1, -1), WHITE), ('GRID', (0, 0), (-1, -1), 1.8, INK), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
