@@ -324,11 +324,6 @@ function Hero({
       <Cow mood={mood} className="hero-cow" />
       <Pig mood={mood} className="hero-pig" />
       <svg className="hero-art" viewBox="0 -104 160 254" aria-hidden>
-        <g stroke="#2b1f3f" strokeWidth="5" opacity="0.55" fill="none">
-          <path d="M54 -78c-9-9 9-15 0-26" />
-          <path d="M80 -82c-9-9 9-15 0-26" />
-          <path d="M106 -78c-9-9 9-15 0-26" />
-        </g>
         <image href="/bobo-head.png" x="26" y="-70" width="108" height="157" />
         <g stroke="#2b1f3f" strokeWidth="5">
           <path d="M26 84h108c0 30-22 48-54 48S26 114 26 84z" fill="#ff7d66" />

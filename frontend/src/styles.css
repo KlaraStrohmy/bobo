@@ -4215,10 +4215,10 @@ a.dish-name:hover {
 .hero-art {
   top: 34px;
 }
-/* the cow peeks out from behind the greeting (the greeting stays on top), and stays clear of the title below it */
+/* the cow peeks out from behind the greeting (the greeting stays on top), close to the head but clear of the title below it */
 .hero-cow {
   right: auto;
-  left: 92px;
+  left: min(116px, calc(100% - 190px));
   top: 6px;
 }
 /* the title stops before the head: on narrower phones "Příště se vaří" wraps onto two lines instead of sliding under it */
