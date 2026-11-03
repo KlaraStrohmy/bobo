@@ -4199,3 +4199,29 @@ a.dish-name:hover {
 .ingredients .ing-group b {
   margin-bottom: 4px;
 }
+
+/* The animals get their own row above the title, so the cow never covers the text next to it. */
+.hero:not(.hero-skeleton) {
+  padding-top: 52px;
+}
+.hero-cow {
+  right: 98px;
+  top: 8px;
+  width: 100px;
+}
+.hero-pig {
+  top: 22px;
+}
+.hero-art {
+  top: 34px;
+}
+/* the cow peeks out from behind the greeting (the greeting stays on top), and stays clear of the title below it */
+.hero-cow {
+  right: auto;
+  left: 92px;
+  top: 6px;
+}
+/* the title stops before the head: on narrower phones "Příště se vaří" wraps onto two lines instead of sliding under it */
+.hero:not(.hero-skeleton) .hero-title {
+  max-width: calc(100% - 128px); /* content box is 40px narrower than the card */
+}
