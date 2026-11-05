@@ -372,8 +372,8 @@ S += [Spacer(1, 26), logo, Spacer(1, 14),
       P('Návod krok za krokem', ParagraphStyle('cov3', fontName='Arial', fontSize=20, leading=26, textColor=INK, spaceAfter=22))]
 cover_items = Table([[P('<b>1</b>', center), P('<b>Odkaz na web Bobo</b> a přihlášení', body)],
                      [P('<b>2</b>', center), P('<b>Jak si Bobo stáhnout do telefonu</b> (iPhone, Android, počítač)', body)],
-                     [P('<b>3</b>', center), P('<b>Jak zapnout notifikace</b> a kde se nastavují', body)],
-                     [P('<b>4</b>', center), P('<b>Když něco nefunguje</b>, odpovědi na časté otázky', body)]], colWidths=[34, CW - 34])
+                     [P('<b>3</b>', center), P('<b>Kde se nastavují notifikace</b>', body)],
+                     ], colWidths=[34, CW - 34])
 cover_items.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('BACKGROUND', (0, 0), (0, -1), YELLOW), ('BOX', (0, 0), (0, -1), 2, INK),
                                  ('INNERGRID', (0, 0), (0, -1), 2, INK), ('BOTTOMPADDING', (0, 0), (-1, -1), 8), ('TOPPADDING', (0, 0), (-1, -1), 8)]))
 S += [cover_items, Spacer(1, 30)]
@@ -413,7 +413,7 @@ S += [P('Tohle je adresa aplikace. Klepni na ni, nebo ji opiš do prohlížeče:
       step(2, 'Přihlas se firemním účtem', 'Objeví se stránka Microsoftu „Přihlásit se“. Napiš svůj firemní e-mail (<b>@strohmy.cz</b>), klepni na Další, napiš heslo a potvrď.'),
       step(3, 'Hotovo, uvidíš žlutou kartu', 'Po přihlášení se otevře hlavní stránka. Nahoře je žlutá karta „Dnes se vaří“ nebo „Příště se vaří“ a pod ní seznam dnů.'),
       box('tip', 'Tip', 'Přihlášení si aplikace pamatuje. Po instalaci na plochu se budeš přihlašovat jen výjimečně, třeba po delší době.'),
-      box('warn', 'Přihlášení nejde?', 'Zkus aplikaci úplně zavřít a otevřít znovu, nebo odkaz otevřít v anonymním okně. Pokud pořád nejde, napiš správcům (Klára nebo Pavel). Podrobnosti jsou v kroku 4.'),
+      box('warn', 'Přihlášení nejde?', 'Zkus aplikaci úplně zavřít a otevřít znovu, nebo odkaz otevřít v anonymním okně. Pokud pořád nejde, napiš správcům (Klára nebo Pavel).'),
       PageBreak()]
 
 # ===== 4: iPhone install =====
@@ -554,5 +554,21 @@ ct.setStyle(TableStyle([('BACKGROUND', (0, 0), (0, -1), YELLOW), ('BACKGROUND', 
                         ('LEFTPADDING', (0, 0), (-1, -1), 10), ('RIGHTPADDING', (0, 0), (-1, -1), 10), ('TOPPADDING', (0, 0), (-1, -1), 10), ('BOTTOMPADDING', (0, 0), (-1, -1), 6)]))
 S += [ct, Spacer(1, 16), box('ok', 'Něco pořád nejde?', 'Zeptej se správců aplikace, Kláry nebo Pavla. Napiš jim, jaký máš telefon (iPhone, nebo Android) a co přesně se děje, ideálně se snímkem obrazovky.')]
 
+# drop pages (chunks between page breaks): notifications overview, iPhone/Android/desktop notification steps, usage, FAQ
+chunks, cur = [], []
+for f in S:
+    if isinstance(f, PageBreak):
+        chunks.append(cur); cur = []
+    else:
+        cur.append(f)
+chunks.append(cur)
+DROP = {7, 9, 10, 11, 12}
+S = []
+for i, c in enumerate(chunks):
+    if i in DROP:
+        continue
+    S += c
+    if i != len(chunks) - 1:
+        S.append(PageBreak())
 doc.build(S)
 print('ok', OUT, os.path.getsize(OUT) // 1024, 'kB')
