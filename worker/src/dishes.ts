@@ -88,7 +88,14 @@ export const DISHES: readonly Dish[] = [
     lactose: 'no',
   },
   // shrimp, mango, dressing + about 50 g dry rice noodles
-  { id: 'mango-salat-s-krevetami', name: 'Mango salát s krevetami', nutrition: n(30, 16, 70), lactose: 'no' },
+  // yogurt in the dressing, so lactose
+  {
+    id: 'mango-salat-s-krevetami',
+    name: 'Mango salát s krevetami',
+    nutrition: n(30, 16, 70),
+    lactose: 'yes',
+    ingredients: [{ items: ['mango', 'avokádo', 'limetka', 'jogurt', 'majonéza', 'koriandr', 'krevety', 'kukuřičné placky', 'ledový salát'] }],
+  },
   {
     // pasta, roasted peppers (roasted in about 1 tbsp olive oil, not in the cook's list) and about half a burrata (60 g); burrata is cream-filled, so lactose
     id: 'testoviny-s-omackou-z-pecenych-paprik',
