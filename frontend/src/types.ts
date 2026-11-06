@@ -47,6 +47,11 @@ export interface Overview {
   yes: UserRef[];
   no: UserRef[];
   none: UserRef[];
+  /** Eat every cooking day without signing up; already included in counts.yes. */
+  fixed: string[];
+  /** Not counted for lunch; admins only see whether they voted for next week's dishes. */
+  voteOnly: { email: string; name: string; voted: boolean }[];
+  voteWeek: string;
 }
 
 export interface SummaryDay {

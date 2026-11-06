@@ -1,4 +1,5 @@
 /** Per-minute reminder job: asks users about tomorrow's lunch via web push (port of bobo.scheduler). */
+import { isNoSignup } from './fixedGuests';
 import { cutoffAt, getOverride, isCooking, isLocked, loadSettings, type CalendarSettings, type Override } from './calendar';
 import type { Env } from './env';
 import { sendToUser, type PushDeps } from './push';
@@ -45,7 +46,7 @@ export async function dueReminders(db: D1Database, now: Date): Promise<{ target:
   const [users, answered, logged] = await db.batch<Record<string, unknown>>([
     // Only users with at least one subscription are candidates.
     db.prepare(
-      `SELECT id, active, reminder_enabled, reminder_time FROM users u
+      `SELECT id, email, active, reminder_enabled, reminder_time FROM users u
        WHERE active = 1 AND reminder_enabled = 1
          AND EXISTS (SELECT 1 FROM push_subscriptions s WHERE s.user_id = u.id)
        ORDER BY id`,
@@ -53,7 +54,7 @@ export async function dueReminders(db: D1Database, now: Date): Promise<{ target:
     db.prepare('SELECT user_id FROM responses WHERE date = ?1').bind(target),
     db.prepare('SELECT user_id FROM reminder_log WHERE date = ?1').bind(target),
   ]);
-  const candidates = users.results.map((u) => ({
+  const candidates = users.results.filter((u) => !isNoSignup(u.email as string)).map((u) => ({
     id: u.id as string,
     active: u.active === 1,
     reminderEnabled: u.reminder_enabled === 1,

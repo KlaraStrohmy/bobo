@@ -4225,3 +4225,10 @@ a.dish-name:hover {
 .hero:not(.hero-skeleton) .hero-title {
   max-width: calc(100% - 128px); /* content box is 40px narrower than the card */
 }
+
+/* Fixed lunch guests and vote-only people in the admin overview */
+.people-voteonly { margin-top: 18px; }
+.people-voteonly h3 { display: flex; align-items: center; gap: 8px; }
+.people-voteonly .people-empty { margin: 2px 0 8px; }
+.person-fixed .tag { margin-left: auto; }
+.people-voteonly .person-row .tag { margin-left: auto; }

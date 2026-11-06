@@ -19,6 +19,7 @@ import {
 } from './calendar';
 import { getDayDish, setDayDish } from './dayDishes';
 import { isDishId } from './dishes';
+import { FIXED_GUESTS, NO_SIGNUP_EMAILS, isNoSignup } from './fixedGuests';
 import type { Env } from './env';
 import { sendToUser } from './push';
 import { reminderDeadline, reminderTimeAllowed } from './reminders';
@@ -371,24 +372,38 @@ export function createApp(options: AppOptions = {}) {
     const q = c.req.query('date');
     const day = q !== undefined ? dateValue(q, 'date') : await nextCookingDay(db, localParts(c.get('now')).date);
     const [cs, override, dish] = await Promise.all([loadSettings(db), getOverride(db, day), getDayDish(db, day)]);
-    const [answersRes, usersRes] = await db.batch<Record<string, unknown>>([
+    const week = votingWeek(c.get('now'));
+    const [answersRes, usersRes, votedRes] = await db.batch<Record<string, unknown>>([
       db.prepare('SELECT user_id, attending FROM responses WHERE date = ?1').bind(day),
       db.prepare('SELECT id, email, name, active FROM users ORDER BY name, email'),
+      db.prepare('SELECT DISTINCT user_id FROM dish_votes WHERE week = ?1').bind(week),
     ]);
     const answers = new Map(answersRes.results.map((r) => [r.user_id as string, r.attending === 1]));
-    const users = usersRes.results as unknown as Pick<UserRow, 'id' | 'email' | 'name' | 'active'>[];
+    const allUsers = usersRes.results as unknown as Pick<UserRow, 'id' | 'email' | 'name' | 'active'>[];
+    const users = allUsers.filter((u) => !isNoSignup(u.email));
     const yes = users.filter((u) => answers.get(u.id) === true).map(userBrief);
     const no = users.filter((u) => answers.get(u.id) === false).map(userBrief);
     const none = users.filter((u) => u.active === 1 && !answers.has(u.id)).map(userBrief);
+    const cooking = isCooking(day, cs, override);
+    const fixed = cooking ? FIXED_GUESTS : [];
+    const voted = new Set(votedRes.results.map((r) => r.user_id as string));
+    const byEmail = new Map(allUsers.map((u) => [u.email.toLowerCase(), u]));
+    const voteOnly = NO_SIGNUP_EMAILS.map((email) => {
+      const u = byEmail.get(email);
+      return { email, name: u?.name || email, voted: u ? voted.has(u.id) : false };
+    });
     return c.json({
       date: day,
-      cooking: isCooking(day, cs, override),
+      cooking,
       note: override ? override.note : null,
       dish,
-      counts: { yes: yes.length, no: no.length, none: none.length },
+      counts: { yes: yes.length + fixed.length, no: no.length, none: none.length },
       yes,
       no,
       none,
+      fixed,
+      voteOnly,
+      voteWeek: week,
     });
   });
 
@@ -397,12 +412,17 @@ export function createApp(options: AppOptions = {}) {
     const [from, to] = queryRange(c);
     checkRange(from, to);
     const [cs, overrides] = await Promise.all([loadSettings(db), loadOverrides(db, from, to)]);
-    const [activeRes, rowsRes] = await db.batch<Record<string, unknown>>([
-      db.prepare('SELECT id FROM users WHERE active = 1'),
+    const [activeRes, rowsRes, noSignupRes] = await db.batch<Record<string, unknown>>([
+      db.prepare('SELECT id, email FROM users WHERE active = 1'),
       db.prepare('SELECT date, attending, user_id FROM responses WHERE date >= ?1 AND date <= ?2').bind(from, to),
+      db.prepare('SELECT id, email FROM users'),
     ]);
-    const activeIds = new Set(activeRes.results.map((r) => r.id as string));
-    const rows = rowsRes.results as { date: string; attending: number; user_id: string }[];
+    const excludedIds = new Set(noSignupRes.results.filter((r) => isNoSignup(r.email as string)).map((r) => r.id as string));
+    const counted = activeRes.results.filter((r) => !isNoSignup(r.email as string));
+    const activeIds = new Set(counted.map((r) => r.id as string));
+    const rows = (rowsRes.results as { date: string; attending: number; user_id: string }[]).filter(
+      (r) => !excludedIds.has(r.user_id),
+    );
     const days = [];
     for (const day of dateRange(from, to)) {
       const dayRows = rows.filter((r) => r.date === day);
@@ -412,7 +432,7 @@ export function createApp(options: AppOptions = {}) {
         date: day,
         cooking: isCooking(day, cs, override),
         note: override ? override.note : null,
-        yes: dayRows.filter((r) => r.attending === 1).length,
+        yes: dayRows.filter((r) => r.attending === 1).length + (isCooking(day, cs, override) ? FIXED_GUESTS.length : 0),
         no: dayRows.filter((r) => r.attending !== 1).length,
         none: [...activeIds].filter((id) => !answered.has(id)).length,
       });

@@ -305,12 +305,20 @@ function DayOverview({
                 <h3>
                   <i className={`dot dot-${g.key}`} />
                   {g.label}
-                  <span className="people-count">{data[g.key].length}</span>
+                  <span className="people-count">{data[g.key].length + (g.key === 'yes' ? data.fixed.length : 0)}</span>
                 </h3>
-                {data[g.key].length === 0 ? (
+                {data[g.key].length + (g.key === 'yes' ? data.fixed.length : 0) === 0 ? (
                   <p className="people-empty">nikdo</p>
                 ) : (
                   <ul>
+                    {g.key === 'yes' &&
+                      data.fixed.map((name) => (
+                        <li key={name} className="person-row person-fixed">
+                          <Avatar name={name} seed={name} size="sm" />
+                          <span className="person">{name}</span>
+                          <span className="tag">vždy ano</span>
+                        </li>
+                      ))}
                     {data[g.key].map((u) => (
                       <li key={u.id} className="person-row">
                         <Avatar name={u.name || u.email} seed={u.id} size="sm" />
@@ -330,6 +338,24 @@ function DayOverview({
                 )}
               </div>
             ))}
+          </div>
+          <div className="people people-voteonly">
+            <h3>
+              Jen hlasování
+              <span className="people-count">{data.voteOnly.filter((v) => v.voted).length}/{data.voteOnly.length}</span>
+            </h3>
+            <p className="people-empty">Na oběd se nepočítají, vidíš jen, kdo už hlasoval na příští týden.</p>
+            <ul>
+              {data.voteOnly.map((v) => (
+                <li key={v.email} className="person-row">
+                  <Avatar name={v.name} seed={v.email} size="sm" />
+                  <span className="person" title={v.email}>
+                    {v.name}
+                  </span>
+                  <span className={`tag ${v.voted ? 'tag-today' : ''}`}>{v.voted ? 'hlasoval(a)' : 'zatím ne'}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </>
       )}

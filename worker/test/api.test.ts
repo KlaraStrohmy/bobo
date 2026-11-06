@@ -178,7 +178,7 @@ describe('API', () => {
       none: { email: string }[];
     };
     expect(ov.cooking).toBe(true);
-    expect(ov.counts).toEqual({ yes: 1, no: 1, none: 1 });
+    expect(ov.counts).toEqual({ yes: 5, no: 1, none: 1 }); // alice + 4 fixed guests
     expect(ov.yes.map((u) => u.email)).toEqual(['alice@strohmy.cz']);
     expect(ov.no.map((u) => u.email)).toEqual(['bob@strohmy.cz']);
     expect(ov.none.map((u) => u.email)).toEqual([ADMIN]); // carol inactive
@@ -188,13 +188,39 @@ describe('API', () => {
     const summary = (await (await c.get('/api/admin/summary?from=2026-10-13&to=2026-10-14', ADM)).json()) as {
       days: Record<string, unknown>[];
     };
-    expect(summary.days[0]).toEqual({ date: '2026-10-13', cooking: true, note: null, yes: 1, no: 1, none: 1 });
-    expect(summary.days[1].cooking).toBe(false);
+    expect(summary.days[0]).toEqual({ date: '2026-10-13', cooking: true, note: null, yes: 5, no: 1, none: 1 });
+    expect(summary.days[1]).toMatchObject({ cooking: false, yes: 0 });
     const users = ((await (await c.get('/api/admin/users', ADM)).json()) as { users: Record<string, unknown>[] }).users;
     expect(users).toHaveLength(4);
     expect(Object.keys(users[0]).sort()).toEqual(['active', 'email', 'id', 'lastSeenAt', 'name', 'reminderEnabled']);
     expect(users.map((u) => u.name)).toEqual(['admin', 'alice', 'bob', 'carol']);
     expect(String(users[0].lastSeenAt)).toMatch(/\+00:00$/);
     expect((await c.put('/api/admin/users/nobody', { active: true }, ADM)).status).toBe(404);
+  });
+
+  it('counts fixed guests and leaves no-signup users out of the lunch numbers', async () => {
+    const hurta = as('miroslav.hurta@strohmy.cz');
+    const skalak = as('vojtech.skalak@strohmy.cz');
+    for (const h of [ALICE, hurta, skalak, ADM]) await c.get('/api/me', h);
+    await c.put('/api/responses/2026-10-13', { attending: true }, hurta);
+    await c.put('/api/votes/koprovka', { voted: true }, hurta);
+    const ov = (await (await c.get('/api/admin/overview?date=2026-10-13', ADM)).json()) as {
+      counts: { yes: number; no: number; none: number };
+      fixed: string[];
+      voteOnly: { email: string; voted: boolean }[];
+      yes: { email: string }[];
+      none: { email: string }[];
+    };
+    expect(ov.fixed).toEqual(['Trader 1', 'Trader 2', 'Trader 3', 'Mirek']);
+    expect(ov.counts).toEqual({ yes: 4, no: 0, none: 2 }); // only the fixed guests; alice and admin have not answered
+    expect(ov.yes).toEqual([]);
+    expect(ov.none.map((u) => u.email).sort()).toEqual([ADMIN, 'alice@strohmy.cz']);
+    expect(ov.voteOnly).toHaveLength(6);
+    expect(ov.voteOnly.find((v) => v.email === 'miroslav.hurta@strohmy.cz')?.voted).toBe(true);
+    expect(ov.voteOnly.find((v) => v.email === 'vojtech.skalak@strohmy.cz')?.voted).toBe(false);
+    expect(ov.voteOnly.find((v) => v.email === 'jan.bednar@strohmy.cz')?.voted).toBe(false); // never signed in
+    const off = (await (await c.get('/api/admin/overview?date=2026-10-14', ADM)).json()) as { fixed: string[]; counts: { yes: number } };
+    expect(off.fixed).toEqual([]); // no cooking on Wednesday
+    expect(off.counts.yes).toBe(0);
   });
 });
