@@ -6,6 +6,7 @@ import {
   endOfMonth,
   formatCutoff,
   formatDayMonth,
+  hourPrague,
   isoWeekday,
   isoWeekNumber,
   mondayOf,
@@ -23,6 +24,8 @@ import { useToast } from '../toast';
 import type { Day, Me } from '../types';
 
 const WEEKS = 5;
+/** Until this hour (Prague) the hero shows today's lunch, afterwards the next cooking day. */
+const TODAY_UNTIL_HOUR = 12;
 /** What is cooking; the backend has no menu yet, so this is a placeholder. */
 const MENU_PLACEHOLDER = '…';
 const FRIDAY = 5;
@@ -159,7 +162,14 @@ export default function LunchesPage({ me, onVote }: { me: Me; onVote: () => void
 
   const cookingDays = useMemo(() => shownDays?.filter((d) => d.cooking) ?? [], [shownDays]);
   const answered = cookingDays.filter((d) => d.attending !== null).length;
-  const next = cookingDays[0] ?? null;
+  const [hour, setHour] = useState(hourPrague);
+  useEffect(() => {
+    const t = setInterval(() => setHour(hourPrague()), 60_000);
+    return () => clearInterval(t);
+  }, []);
+  // Today is hidden from the list once locked, but until noon it is still what is on the plate.
+  const todayCooking = hour < TODAY_UNTIL_HOUR ? days?.find((d) => d.date === today && d.cooking) : undefined;
+  const next = todayCooking ?? cookingDays[0] ?? null;
 
   const setAnswer = async (date: string, attending: Answer) => {
     const prev = days?.find((d) => d.date === date);

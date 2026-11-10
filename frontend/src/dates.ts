@@ -17,6 +17,13 @@ export function todayPrague(): string {
   return isoFmt.format(new Date());
 }
 
+const hourFmt = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hourCycle: 'h23' });
+
+/** Current hour (0-23) in Prague. */
+export function hourPrague(): number {
+  return Number(hourFmt.format(new Date()));
+}
+
 function toUtc(iso: string): Date {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d, 12));
