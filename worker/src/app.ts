@@ -19,7 +19,7 @@ import {
 } from './calendar';
 import { getDayDish, setDayDish } from './dayDishes';
 import { isDishId } from './dishes';
-import { FIXED_GUESTS, NO_SIGNUP_EMAILS, isNoSignup } from './fixedGuests';
+import { FIXED_GUESTS, NO_SIGNUP_EMAILS, isLactoseFree, isNoSignup } from './fixedGuests';
 import type { Env } from './env';
 import { sendToUser } from './push';
 import { reminderDeadline, reminderTimeAllowed } from './reminders';
@@ -100,7 +100,12 @@ function queryRange(c: Ctx): [string, string] {
 
 const isoUtc = (value: string | null): string | null => (value ? value.replace(/Z$/, '+00:00') : null);
 
-const userBrief = (u: Pick<UserRow, 'id' | 'email' | 'name'>) => ({ id: u.id, email: u.email, name: u.name });
+const userBrief = (u: Pick<UserRow, 'id' | 'email' | 'name'>) => ({
+  id: u.id,
+  email: u.email,
+  name: u.name,
+  lactoseFree: isLactoseFree(u.email),
+});
 
 const userAdminJson = (u: UserRow) => ({
   id: u.id,

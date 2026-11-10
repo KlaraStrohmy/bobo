@@ -324,6 +324,7 @@ function DayOverview({
                         <Avatar name={u.name || u.email} seed={u.id} size="sm" />
                         <span className="person" title={u.email}>
                           {u.name || u.email}
+                          {u.lactoseFree && <span className="tag tag-lactose">bez laktózy</span>}
                         </span>
                         <Segmented
                           size="sm"

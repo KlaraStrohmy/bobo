@@ -14,3 +14,8 @@ export const NO_SIGNUP_EMAILS = [
 ];
 
 export const isNoSignup = (email: string) => NO_SIGNUP_EMAILS.includes(email.trim().toLowerCase());
+
+/** Marked "bez laktózy" in the admin overview, so the cook knows who needs lactose-free portions. */
+export const LACTOSE_FREE_EMAILS = ['ladislav.brezina@strohmy.cz', 'martin.strand.husek@strohmy.cz', 'trang.doseda@strohmy.cz'];
+
+export const isLactoseFree = (email: string) => LACTOSE_FREE_EMAILS.includes(email.trim().toLowerCase());

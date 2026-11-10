@@ -36,6 +36,7 @@ export interface UserRef {
   id: string;
   email: string;
   name: string;
+  lactoseFree?: boolean;
 }
 
 export interface Overview {

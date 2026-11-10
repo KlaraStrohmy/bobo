@@ -182,7 +182,7 @@ describe('API', () => {
     expect(ov.yes.map((u) => u.email)).toEqual(['alice@strohmy.cz']);
     expect(ov.no.map((u) => u.email)).toEqual(['bob@strohmy.cz']);
     expect(ov.none.map((u) => u.email)).toEqual([ADMIN]); // carol inactive
-    expect(Object.keys(ov.yes[0]).sort()).toEqual(['email', 'id', 'name']);
+    expect(Object.keys(ov.yes[0]).sort()).toEqual(['email', 'id', 'lactoseFree', 'name']);
     const def = (await (await c.get('/api/admin/overview', ADM)).json()) as { date: string };
     expect(def.date).toBe('2026-10-13'); // nearest cooking day from Monday
     const summary = (await (await c.get('/api/admin/summary?from=2026-10-13&to=2026-10-14', ADM)).json()) as {

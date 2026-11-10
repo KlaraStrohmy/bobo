@@ -4232,3 +4232,5 @@ a.dish-name:hover {
 .people-voteonly .people-empty { margin: 2px 0 8px; }
 .person-fixed .tag { margin-left: auto; }
 .people-voteonly .person-row .tag { margin-left: auto; }
+
+.tag-lactose { display: table; margin: 2px 0 0; background: #d9f7ec; color: #17604a; border: 1.5px solid #3ccb9c; white-space: nowrap; }
